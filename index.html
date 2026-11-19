@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juilliard Academy — Student & School Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --red: #c8102e;
+            --red-dark: #990b22;
+            --red-soft: rgba(200, 16, 46, 0.09);
+            --red-border: rgba(200, 16, 46, 0.24);
+            --bg: #f6f7f9;
+            --surface: #ffffff;
+            --surface-2: #f9fafb;
+            --text: #141619;
+            --muted: #5c6370;
+            --border: #e5e7eb;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            --radius: 18px;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        body.dark-mode {
+            --red: #f43f5e;
+            --red-dark: #e11d48;
+            --red-soft: rgba(244, 63, 94, 0.14);
+            --red-border: rgba(244, 63, 94, 0.34);
+            --bg: #0c0e13;
+            --surface: #151921;
+            --surface-2: #1c212c;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --border: #262c3a;
+            --shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.55;
+            transition: background 0.25s var(--ease), color 0.25s var(--ease);
+        }
+
+        /* ================= AUTH SCREEN ================= */
+        #authSection {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background:
+                radial-gradient(circle at 85% 15%, var(--red-soft), transparent 45%),
+                radial-gradient(circle at 15% 85%, var(--red-soft), transparent 45%),
+                var(--bg);
+        }
+
+        .auth-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 5px solid var(--red);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            max-width: 450px;
+            width: 100%;
+            padding: 2.25rem 2rem;
+            animation: rise 0.35s var(--ease);
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-brand {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-brand h1 {
+            color: var(--red);
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .auth-brand p {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-top: 0.25rem;
+        }
+
+        .auth-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            padding: 0.3rem;
+            border-radius: 12px;
+            margin-bottom: 1.35rem;
+        }
+
+        .auth-tab-btn {
+            border: none;
+            background: transparent;
+            padding: 0.6rem;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s var(--ease);
+        }
+
+        .auth-tab-btn.active {
+            background: var(--red);
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.38rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.72rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            font-size: 0.94rem;
+            background: var(--surface-2);
+            color: var(--text);
+            transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px var(--red-soft);
+        }
+
+        .btn-primary {
+            background: var(--red);
+            color: #ffffff;
+            border: none;
+            padding: 0.78rem 1.3rem;
+            border-radius: 11px;
+            font-weight: 700;
+            font-size: 0.94rem;
+            cursor: pointer;
+            transition: background 0.2s var(--ease), transform 0.15s var(--ease);
+        }
+
+        .btn-primary:hover {
+            background: var(--red-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: var(--surface-2);
+            color: var(--red);
+            border: 1px solid var(--red-border);
+            padding: 0.52rem 0.95rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s var(--ease);
+        }
+
+        .btn-ghost:hover {
+            background: var(--red-soft);
+        }
+
+        .auth-error {
+            color: var(--red);
+            background: var(--red-soft);
+            border: 1px solid var(--red-border);
+            padding: 0.65rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            margin-bottom: 0.9rem;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* ================= 4-SECOND BADGE SPLASH ================= */
+        #loginBadgeScreen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: radial-gradient(circle at center, var(--red-soft), var(--bg) 72%);
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .badge-splash-card {
+            background: var(--surface);
+            border: 1px solid var(--red-border);
+            border-top: 5px solid var(--red);
+            border-radius: 24px;
+            padding: 2.4rem 2rem;
+            max-width: 390px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: rise 0.3s var(--ease);
+        }
+
+        .avatar-ring {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--red-soft);
+            border: 2px solid var(--red);
+            flex-shrink: 0;
+        }
+
+        .avatar-ring img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .splash-avatar {
+            width: 86px;
+            height: 86px;
+            font-size: 2.6rem;
+            margin: 0 auto 1rem;
+        }
+
+        .splash-pill {
+            display: inline-block;
+            background: var(--red);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.84rem;
+            padding: 0.38rem 1rem;
+            border-radius: 999px;
+            margin: 0.6rem 0 0.8rem;
+        }
+
+        .splash-progress {
+            width: 100%;
+            height: 5px;
+            background: var(--surface-2);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 1.25rem;
+        }
+
+        .splash-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--red);
+            transition: width 4s linear;
+        }
+
+        /* ================= MODERN TOPBAR & BOTTOM DOCK ================= */
+        #appWrapper {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 98px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: rgba(200, 16, 46, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #ffffff;
+            padding: 0.85rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        body.dark-mode .topbar {
+            background: rgba(21, 25, 33, 0.88);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .brand-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.22);
+        }
+
+        body.dark-mode .brand-dot {
+            background: var(--red);
+            box-shadow: 0 0 0 4px var(--red-soft);
+        }
+
+        .brand-name {
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .pill-btn {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            padding: 0.42rem 0.82rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s var(--ease);
+        }
+
+        .pill-btn:hover {
+            background: rgba(255, 255, 255, 0.26);
+        }
+
+        .user-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            padding: 0.25rem 0.75rem 0.25rem 0.3rem;
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .mini-avatar {
+            width: 28px;
+            height: 28px;
+            font-size: 0.95rem;
+            border-color: #ffffff;
+        }
+
+        .logout-pill {
+            background: #ffffff;
+            color: var(--red);
+            border: none;
+            padding: 0.44rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .main-container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1.75rem 1.5rem 1rem;
+        }
+
+        /* Quote Strip */
+        .quote-strip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--red);
+            border-radius: var(--radius);
+            padding: 1rem 1.3rem;
+            margin-bottom: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+        }
+
+        .quote-strip small {
+            display: block;
+            color: var(--red);
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.2rem;
+        }
+
+        .quote-strip p {
+            font-style: italic;
+            font-size: 0.96rem;
+        }
+
+        /* Sections & Cards */
+        .page-section {
+            display: none;
+            animation: rise 0.28s var(--ease);
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        .page-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .page-title-row h2 {
+            font-size: 1.55rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: var(--red);
+        }
+
+        .bento-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.35rem;
+            margin-bottom: 1.35rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.45rem 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.35rem;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-head h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--red);
+        }
+
+        .tag-red {
+            background: var(--red-soft);
+            color: var(--red);
+            border: 1px solid var(--red-border);
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 0.24rem 0.68rem;
+            border-radius: 999px;
+        }
+
+        .tag-solid {
+            background: var(--red);
+            color: #ffffff;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 0.26rem 0.72rem;
+            border-radius: 999px;
+        }
+
+        .fixture-banner {
+            background: var(--red-soft);
+            border: 1px solid var(--red-border);
+            border-radius: 14px;
+            padding: 1rem 1.15rem;
+            margin-bottom: 1rem;
+        }
+
+        .fixture-banner strong {
+            color: var(--red);
+            font-size: 1.04rem;
+            display: block;
+        }
+
+        .fixture-banner p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .fixture-week {
+            list-style: none;
+            display: grid;
+            gap: 0.48rem;
+        }
+
+        .fixture-week li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.62rem 0.85rem;
+            border-radius: 11px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .fixture-week li.is-tomorrow {
+            background: var(--red);
+            color: #ffffff;
+            border-color: var(--red);
+            font-weight: 700;
+        }
+
+        .entry-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--red);
+            border-radius: 12px;
+            padding: 0.9rem 1.05rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .entry-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .entry-box p {
+            color: var(--muted);
+            font-size: 0.92rem;
+            white-space: pre-line;
+        }
+
+        .spotlight-panel {
+            text-align: center;
+            padding: 1.35rem 1rem;
+            border-radius: 14px;
+            background: var(--red-soft);
+            border: 1px dashed var(--red-border);
+            margin-bottom: 1.1rem;
+        }
+
+        .spotlight-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--red);
+        }
+
+        .spotlight-panel h4 {
+            font-size: 1.18rem;
+            margin: 0.35rem 0;
+        }
+
+        .spotlight-panel p {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.9rem;
+        }
+
+        .info-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.9rem;
+            margin-top: 1.15rem;
+        }
+
+        .info-tile {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+        }
+
+        .info-tile small {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 0.2rem;
+        }
+
+        .profile-banner {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 1.15rem;
+            border-radius: 14px;
+            background: var(--red-soft);
+            border: 1px solid var(--red-border);
+            margin-bottom: 1.35rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 78px;
+            height: 78px;
+            font-size: 2.3rem;
+        }
+
+        /* ================= FLOATING BOTTOM BAR ================= */
+        .bottom-dock {
+            position: fixed;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%);
+            z-index: 400;
+            width: min(960px, calc(100% - 24px));
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.42rem;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.25rem;
+            overflow-x: auto;
+        }
+
+        body.dark-mode .bottom-dock {
+            background: rgba(21, 25, 33, 0.9);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+        }
+
+        .dock-btn {
+            flex: 1;
+            min-width: 82px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            padding: 0.55rem 0.65rem;
+            border-radius: 14px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s var(--ease);
+        }
+
+        .dock-btn:hover {
+            color: var(--red);
+            background: var(--red-soft);
+        }
+
+        .dock-btn.active {
+            background: var(--red);
+            color: #ffffff;
+        }
+
+        @media (max-width: 780px) {
+            .bento-2,
+            .form-row-2,
+            .info-grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .main-container {
+                padding: 1.25rem 1rem 0.75rem;
+            }
+            .brand-name {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= AUTHENTICATION ================= -->
+    <section id="authSection">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <h1>Juilliard Academy</h1>
+                <p>Modern Student & School Hub</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthMode('login')">Log In</button>
+                <button type="button" class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthMode('register')">Create Account</button>
+            </div>
+
+            <div id="authError" class="auth-error"></div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" placeholder="e.g. wtr.kai" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Enter Portal</button>
+            </form>
+
+            <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+                <div class="form-group">
+                    <label for="regFullName">Full Name</label>
+                    <input type="text" id="regFullName" placeholder="e.g. Kai" required>
+                </div>
+                <div class="form-group">
+                    <label for="regUsername">Choose Username</label>
+                    <input type="text" id="regUsername" placeholder="e.g. wtr.kai" required>
+                </div>
+                <div class="form-group">
+                    <label for="regClass">Class Level</label>
+                    <select id="regClass" required>
+                        <option value="JSS1">JSS 1</option>
+                        <option value="JSS2">JSS 2</option>
+                        <option value="JSS3">JSS 3</option>
+                        <option value="SS1" selected>SS 1</option>
+                        <option value="SS2">SS 2</option>
+                        <option value="SS3">SS 3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="regAvatar">Starting Icon</label>
+                    <select id="regAvatar">
+                        <option value="🧑🏾‍🎓">🧑🏾‍🎓 Student</option>
+                        <option value="👩🏾‍🎓">👩🏾‍🎓 Scholar</option>
+                        <option value="⚽">⚽ Athlete</option>
+                        <option value="🧮">🧮 Math Whiz</option>
+                        <option value="✍️">✍️ Writer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" placeholder="Create a password" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Create Account & Enter</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ================= 4-SECOND BADGE SPLASH ================= -->
+    <div id="loginBadgeScreen">
+        <div class="badge-splash-card">
+            <div class="avatar-ring splash-avatar" id="splashAvatarBox">🧑🏾‍🎓</div>
+            <h2 id="splashName">Welcome back!</h2>
+            <div class="splash-pill" id="splashBadge">Student • SS1</div>
+            <p style="color: var(--muted); font-size: 0.88rem;">Loading Juilliard Academy...</p>
+            <div class="splash-progress">
+                <div class="splash-progress-bar" id="splashProgressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN PORTAL ================= -->
+    <div id="appWrapper">
+        <header class="topbar">
+            <div class="brand-wrap">
+                <span class="brand-dot"></span>
+                <span class="brand-name" id="headerSchoolName">Juilliard Academy</span>
+            </div>
+            <div class="topbar-actions">
+                <button type="button" class="pill-btn" id="themeToggleBtn" onclick="toggleDarkMode()">Dark</button>
+                <div class="user-pill" onclick="showSection('profileSection')" title="Customize Profile">
+                    <span class="avatar-ring mini-avatar" id="headerAvatarBox">🧑🏾‍🎓</span>
+                    <span id="headerUserName">Student</span>
+                </div>
+                <button type="button" class="logout-pill" onclick="handleLogout()">Log Out</button>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <!-- DAILY QUOTE NOTIFICATION -->
+            <div class="quote-strip" id="dailyQuoteBanner">
+                <div>
+                    <small>Daily Inspirational Quote</small>
+                    <p id="dailyQuoteText">"Success is the sum of small efforts, repeated day in and day out." — Robert Collier</p>
+                </div>
+                <div style="display: flex; gap: 0.45rem;">
+                    <button type="button" class="btn-ghost" onclick="nextDailyQuote()">Next Quote</button>
+                    <button type="button" class="btn-ghost" onclick="document.getElementById('dailyQuoteBanner').style.display='none'">Hide</button>
+                </div>
+            </div>
+
+            <!-- 1. HOME / FIXTURES -->
+            <section id="homeSection" class="page-section active">
+                <div class="page-title-row">
+                    <h2 id="welcomeBannerTitle">Welcome to Juilliard Academy</h2>
+                    <span class="tag-solid" id="todayDateBadge">Today</span>
+                </div>
+
+                <div class="bento-2">
+                    <div class="card">
+                        <div class="card-head">
+                            <h3>Next-Day Fixture</h3>
+                            <span class="tag-red" id="tomorrowDayLabel">Tomorrow</span>
+                        </div>
+                        <div class="fixture-banner">
+                            <strong id="tomorrowFixtureTitle">Loading...</strong>
+                            <p id="tomorrowFixtureDesc"></p>
+                        </div>
+                        <ul class="fixture-week" id="weeklyFixturesList"></ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head">
+                            <h3>Class Hub (<span id="dashClassLabel">SS1</span>)</h3>
+                            <button type="button" class="btn-ghost" onclick="showSection('classSection')">Manage</button>
+                        </div>
+                        <p style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.55rem;">Latest Class News</p>
+                        <div id="dashClassNewsPreview"></div>
+                        <p style="font-size: 0.85rem; font-weight: 700; margin: 1rem 0 0.55rem;">Upcoming Reminders</p>
+                        <div id="dashRemindersPreview"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. ABOUT SCHOOL -->
+            <section id="aboutSchoolSection" class="page-section">
+                <div class="page-title-row">
+                    <h2>About Juilliard Academy</h2>
+                    <span class="tag-red" id="aboutMottoBadge">Excellence</span>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <h3 id="aboutSchoolHeading">Juilliard Academy</h3>
+                    </div>
+                    <p id="homeSchoolDescription" style="color: var(--muted); line-height: 1.7;"></p>
+                    <div class="info-grid-3" id="homeSchoolMeta"></div>
+                </div>
+
+                <div class="card admin-only-card">
+                    <div class="card-head">
+                        <h3>Admin: Edit School Info</h3>
+                    </div>
+                    <form class="admin-only-form" onsubmit="saveSchoolInfo(event)">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="schoolNameInput">School Name</label>
+                                <input type="text" id="schoolNameInput" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolMottoInput">Motto</label>
+                                <input type="text" id="schoolMottoInput" required>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="schoolLocationInput">Location</label>
+                                <input type="text" id="schoolLocationInput" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolPrincipalInput">Principal</label>
+                                <input type="text" id="schoolPrincipalInput" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolAboutInput">About Description</label>
+                            <textarea id="schoolAboutInput" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Save School Info</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 3. CLASS NEWS & REMINDERS -->
+            <section id="classSection" class="page-section">
+                <div class="page-title-row">
+                    <h2><span id="classPageTitle">SS1</span> News & Reminders</h2>
+                </div>
+
+                <div class="bento-2">
+                    <div class="card">
+                        <div class="card-head"><h3>Class News</h3></div>
+                        <form class="admin-only-form" onsubmit="addClassNews(event)" style="margin-bottom: 1.15rem;">
+                            <div class="form-group">
+                                <input type="text" id="classNewsTitle" placeholder="News headline" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="classNewsBody" rows="2" placeholder="Announcement details..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Post Class News</button>
+                        </form>
+                        <div id="classNewsList"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head"><h3>My Reminders</h3></div>
+                        <form onsubmit="addUserReminder(event)" style="margin-bottom: 1.15rem;">
+                            <div class="form-group">
+                                <input type="text" id="reminderText" placeholder="Task or assignment reminder" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="date" id="reminderDate" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Add Reminder</button>
+                        </form>
+                        <div id="userRemindersList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. SPOTLIGHTS -->
+            <section id="spotlightsSection" class="page-section">
+                <div class="page-title-row">
+                    <h2>Student Spotlights</h2>
+                </div>
+
+                <div class="bento-2">
+                    <div class="card">
+                        <div class="card-head"><h3>Student of the Week</h3></div>
+                        <div class="spotlight-panel" id="sotwDisplay"></div>
+                        <form class="admin-only-form" onsubmit="updateSpotlight(event, 'sotw')">
+                            <div class="form-group">
+                                <input type="text" id="sotwNameInput" placeholder="Student Name & Class" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="sotwReasonInput" rows="2" placeholder="Highlight or achievement..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Student of the Week</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head"><h3>King of Math</h3></div>
+                        <div class="spotlight-panel" id="komDisplay"></div>
+                        <form class="admin-only-form" onsubmit="updateSpotlight(event, 'kom')">
+                            <div class="form-group">
+                                <input type="text" id="komNameInput" placeholder="Student Name & Class" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="komReasonInput" rows="2" placeholder="Math challenge score or reason..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Update King of Math</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. TESTS & SPORTS -->
+            <section id="academicsSportsSection" class="page-section">
+                <div class="page-title-row">
+                    <h2>Tests & Sports Matches</h2>
+                </div>
+
+                <div class="bento-2">
+                    <div class="card">
+                        <div class="card-head"><h3>Upcoming Tests</h3></div>
+                        <form class="admin-only-form" onsubmit="addUpcomingTest(event)" style="margin-bottom: 1.15rem;">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <input type="text" id="testSubject" placeholder="Subject" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="testClass" placeholder="Class (e.g. SS1)" required>
+                                </div>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <input type="date" id="testDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="testTopics" placeholder="Topics" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary">Add Test</button>
+                        </form>
+                        <div id="upcomingTestsList"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head"><h3>Upcoming Sports Matches</h3></div>
+                        <form class="admin-only-form" onsubmit="addSportsMatch(event)" style="margin-bottom: 1.15rem;">
+                            <div class="form-group">
+                                <input type="text" id="matchTeams" placeholder="Fixture (e.g. Red House vs Blue House)" required>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <input type="text" id="matchSport" placeholder="Sport" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="date" id="matchDate" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary">Add Match</button>
+                        </form>
+                        <div id="sportsMatchesList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. ESSAYS -->
+            <section id="essaysSection" class="page-section">
+                <div class="page-title-row">
+                    <h2>Student Essays</h2>
+                </div>
+
+                <div class="card admin-only-card">
+                    <div class="card-head"><h3>Publish Student Essay</h3></div>
+                    <form class="admin-only-form" onsubmit="addStudentEssay(event)">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <input type="text" id="essayTitle" placeholder="Essay Title" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="essayAuthor" placeholder="Author & Class" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="essayBody" rows="4" placeholder="Paste student essay here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Publish Essay</button>
+                    </form>
+                </div>
+
+                <div id="essaysList"></div>
+            </section>
+
+            <!-- 7. REVIEWS -->
+            <section id="reviewsSection" class="page-section">
+                <div class="page-title-row">
+                    <h2>School Reviews</h2>
+                </div>
+
+                <div class="card">
+                    <div class="card-head"><h3>Leave a Review</h3></div>
+                    <form onsubmit="addSchoolReview(event)">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <select id="reviewRating">
+                                    <option value="5">5 / 5 — Excellent</option>
+                                    <option value="4">4 / 5 — Very Good</option>
+                                    <option value="3">3 / 5 — Good</option>
+                                    <option value="2">2 / 5 — Fair</option>
+                                    <option value="1">1 / 5 — Needs Work</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="reviewHighlight" placeholder="Highlight (e.g. Academics, Clubs, Sports)" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="reviewComment" rows="3" placeholder="Share your thoughts..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Submit Review</button>
+                    </form>
+                </div>
+
+                <div id="reviewsList"></div>
+            </section>
+
+            <!-- 8. PROFILE -->
+            <section id="profileSection" class="page-section">
+                <div class="page-title-row">
+                    <h2>My Profile</h2>
+                </div>
+
+                <div class="card">
+                    <div class="profile-banner">
+                        <div class="avatar-ring profile-avatar" id="profilePreviewAvatar">🧑🏾‍🎓</div>
+                        <div>
+                            <h3 id="profilePreviewName">Student Name</h3>
+                            <p style="color: var(--muted); font-size: 0.9rem;" id="profilePreviewMeta">@username • SS1</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.3rem;" id="profilePreviewBio"></p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="saveUserProfile(event)">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="profFullName">Full Name</label>
+                                <input type="text" id="profFullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profClass">Class Level</label>
+                                <select id="profClass" required>
+                                    <option value="JSS1">JSS 1</option>
+                                    <option value="JSS2">JSS 2</option>
+                                    <option value="JSS3">JSS 3</option>
+                                    <option value="SS1">SS 1</option>
+                                    <option value="SS2">SS 2</option>
+                                    <option value="SS3">SS 3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="profPhotoUpload">Upload Photo (from device)</label>
+                                <input type="file" id="profPhotoUpload" accept="image/*" onchange="handleProfilePhotoUpload(event)">
+                            </div>
+                            <div class="form-group">
+                                <label for="profFallbackEmoji">Icon Fallback</label>
+                                <select id="profFallbackEmoji">
+                                    <option value="🧑🏾‍🎓">🧑🏾‍🎓 Student</option>
+                                    <option value="👩🏾‍🎓">👩🏾‍🎓 Scholar</option>
+                                    <option value="⚽">⚽ Athlete</option>
+                                    <option value="🧮">🧮 Math Whiz</option>
+                                    <option value="✍️">✍️ Writer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profBio">Bio</label>
+                            <textarea id="profBio" rows="2" placeholder="Favorite subjects, house, or goals..."></textarea>
+                        </div>
+                        <div style="display: flex; gap: 0.7rem; flex-wrap: wrap;">
+                            <button type="submit" class="btn-primary">Save Profile</button>
+                            <button type="button" class="btn-ghost" onclick="removeProfilePhoto()">Remove Photo</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- BOTTOM NAVIGATION DOCK -->
+        <nav class="bottom-dock" aria-label="Primary Navigation">
+            <button type="button" class="dock-btn active" data-target="homeSection" onclick="showSection('homeSection', this)">Home</button>
+            <button type="button" class="dock-btn" data-target="aboutSchoolSection" onclick="showSection('aboutSchoolSection', this)">About</button>
+            <button type="button" class="dock-btn" data-target="classSection" onclick="showSection('classSection', this)">Class</button>
+            <button type="button" class="dock-btn" data-target="spotlightsSection" onclick="showSection('spotlightsSection', this)">Spotlights</button>
+            <button type="button" class="dock-btn" data-target="academicsSportsSection" onclick="showSection('academicsSportsSection', this)">Tests & Sports</button>
+            <button type="button" class="dock-btn" data-target="essaysSection" onclick="showSection('essaysSection', this)">Essays</button>
+            <button type="button" class="dock-btn" data-target="reviewsSection" onclick="showSection('reviewsSection', this)">Reviews</button>
+            <button type="button" class="dock-btn" data-target="profileSection" onclick="showSection('profileSection', this)">Profile</button>
+        </nav>
+    </div>
+
+    <script>
+        const KEYS = {
+            USERS: "juilliard_dock_users_v1",
+            CURRENT_USER: "juilliard_dock_current_user_v1",
+            SCHOOL_INFO: "juilliard_dock_info_v1",
+            CLASS_NEWS: "juilliard_dock_class_news_v1",
+            REMINDERS: "juilliard_dock_reminders_v1",
+            SPOTLIGHTS: "juilliard_dock_spotlights_v1",
+            TESTS: "juilliard_dock_tests_v1",
+            MATCHES: "juilliard_dock_matches_v1",
+            ESSAYS: "juilliard_dock_essays_v1",
+            REVIEWS: "juilliard_dock_reviews_v1",
+            DARK_MODE: "juilliard_dock_dark_mode_v1"
+        };
+
+        const SUPABASE_URL = "https://sqffdwkqtahluckgskzp.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_EGS_pbqEJGSghAGmIgS5Lw_eW2G9s1I";
+        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const CLOUD_KEYS = new Set([
+            KEYS.USERS,
+            KEYS.SCHOOL_INFO,
+            KEYS.CLASS_NEWS,
+            KEYS.SPOTLIGHTS,
+            KEYS.TESTS,
+            KEYS.MATCHES,
+            KEYS.ESSAYS,
+            KEYS.REVIEWS
+        ]);
+
+        const cloudCache = {};
+
+        const ADMIN_USERNAME = "wtr.kai";
+
+        function isCurrentUserAdmin() {
+            const user = getData(KEYS.CURRENT_USER, null);
+            return Boolean(user && user.username && user.username.toLowerCase() === ADMIN_USERNAME.toLowerCase());
+        }
+
+        function playLoginChime() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+
+                const ctx = new AudioCtx();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99];
+
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.11);
+
+                    gain.gain.setValueAtTime(0.001, now + idx * 0.11);
+                    gain.gain.exponentialRampToValueAtTime(0.14, now + idx * 0.11 + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.11 + 0.35);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now + idx * 0.11);
+                    osc.stop(now + idx * 0.11 + 0.36);
+                });
+            } catch (err) {
+                console.warn("Login chime skipped:", err);
+            }
+        }
+
+        function playLogoutTone() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+
+                const ctx = new AudioCtx();
+                const now = ctx.currentTime;
+                const notes = [783.99, 659.25, 523.25];
+
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.11);
+
+                    gain.gain.setValueAtTime(0.001, now + idx * 0.11);
+                    gain.gain.exponentialRampToValueAtTime(0.13, now + idx * 0.11 + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.11 + 0.36);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now + idx * 0.11);
+                    osc.stop(now + idx * 0.11 + 0.37);
+                });
+            } catch (err) {
+                console.warn("Logout tone skipped:", err);
+            }
+        }
+
+        const DAILY_QUOTES = [
+            "\"Success is the sum of small efforts, repeated day in and day out.\" — Robert Collier",
+            "\"Education is the most powerful weapon which you can use to change the world.\" — Nelson Mandela",
+            "\"Do not wait for opportunity. Create it through discipline and curiosity.\"",
+            "\"Excellence is not an act, but a habit.\" — Aristotle",
+            "\"The future belongs to those who prepare for it today.\" — Malcolm X"
+        ];
+
+        const WEEKLY_FIXTURES = {
+            1: { day: "Monday", title: "General School Assembly", desc: "Morning parade, national anthem, announcements & principal's address." },
+            2: { day: "Tuesday", title: "Character Development Program", desc: "Leadership values, ethics workshop, and mentorship session." },
+            3: { day: "Wednesday", title: "Mid-Week Fellowship", desc: "Moral reflection, inspirational talks, and student choir session." },
+            4: { day: "Thursday", title: "School Clubs & Societies", desc: "STEM/JET Club, Press Club, Chess Club, Debate & Literary Society." },
+            5: { day: "Friday", title: "Inter-House & School Sports", desc: "Football, athletics, basketball, and house fitness training." }
+        };
+
+        let quoteIndex = new Date().getDate() % DAILY_QUOTES.length;
+        let badgeTimer = null;
+        let pendingPhotoDataUrl = null;
+
+        async function loadCloudCache() {
+            try {
+                const { data, error } = await sbClient
+                    .from("portal_data")
+                    .select("key, payload");
+
+                if (error) {
+                    console.warn("Supabase load error:", error.message);
+                    return;
+                }
+
+                (data || []).forEach(row => {
+                    cloudCache[row.key] = row.payload;
+                });
+            } catch (err) {
+                console.warn("Network load skipped:", err);
+            }
+        }
+
+        function getData(key, fallback) {
+            if (CLOUD_KEYS.has(key) && Object.prototype.hasOwnProperty.call(cloudCache, key)) {
+                return cloudCache[key] ?? fallback;
+            }
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch {
+                return fallback;
+            }
+        }
+
+        function setData(key, value) {
+            if (CLOUD_KEYS.has(key)) {
+                cloudCache[key] = value;
+                sbClient
+                    .from("portal_data")
+                    .upsert(
+                        { key, payload: value, updated_at: new Date().toISOString() },
+                        { onConflict: "key" }
+                    )
+                    .then(({ error }) => {
+                        if (error) console.warn("Supabase save error:", error.message);
+                    });
+            }
+
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                console.warn("Storage warning:", e);
+            }
+        }
+
+        function applySavedTheme() {
+            const dark = Boolean(getData(KEYS.DARK_MODE, false));
+            document.body.classList.toggle("dark-mode", dark);
+            const btn = document.getElementById("themeToggleBtn");
+            if (btn) btn.textContent = dark ? "Light" : "Dark";
+        }
+
+        function toggleDarkMode() {
+            const next = !document.body.classList.contains("dark-mode");
+            setData(KEYS.DARK_MODE, next);
+            applySavedTheme();
+        }
+
+        function renderAvatarContent(el, user) {
+            if (!el || !user) return;
+            if (user.photoDataUrl) {
+                el.innerHTML = `<img src="${user.photoDataUrl}" alt="${user.fullName}">`;
+            } else {
+                el.textContent = user.avatar || "🧑🏾‍🎓";
+            }
+        }
+
+        function seedDefaultsIfEmpty() {
+            if (!getData(KEYS.SCHOOL_INFO, null)) {
+                setData(KEYS.SCHOOL_INFO, {
+                    name: "Juilliard Academy",
+                    motto: "Excellence, Creativity & Discipline",
+                    location: "Main Academic Campus",
+                    principal: "Dr. A. B. Adeyemi",
+                    about: "Juilliard Academy empowers students through strong academics, character formation, clubs, and sports."
+                });
+            }
+            if (!getData(KEYS.SPOTLIGHTS, null)) {
+                setData(KEYS.SPOTLIGHTS, {
+                    sotw: { name: "Zainab Balogun (SS1)", reason: "Consistent punctuality and leadership in science practicals." },
+                    kom: { name: "Tunde Bakare (SS2)", reason: "Top score in the weekly Mathematics & Algebra challenge." }
+                });
+            }
+            if (!getData(KEYS.CLASS_NEWS, null)) {
+                setData(KEYS.CLASS_NEWS, [
+                    { id: 1, classLevel: "SS1", title: "Lab Coat Reminder", body: "Bring lab coats for Thursday's science practical.", author: "Class Rep", date: "Today" }
+                ]);
+            }
+            if (!getData(KEYS.TESTS, null)) {
+                setData(KEYS.TESTS, [
+                    { id: 1, subject: "Mathematics", classLevel: "SS1", date: "2026-11-24", topics: "Quadratic Equations & Indices" }
+                ]);
+            }
+            if (!getData(KEYS.MATCHES, null)) {
+                setData(KEYS.MATCHES, [
+                    { id: 1, teams: "Red House vs White House", sport: "Football", date: "2026-11-20" }
+                ]);
+            }
+            if (!getData(KEYS.ESSAYS, null)) {
+                setData(KEYS.ESSAYS, [
+                    {
+                        id: 1,
+                        title: "Why Discipline Shapes Future Leaders",
+                        author: "Amaka Eze (SS1)",
+                        body: "Daily habits of integrity and focus build lasting leadership both in class and beyond.",
+                        date: "Nov 2026"
+                    }
+                ]);
+            }
+            if (!getData(KEYS.REVIEWS, null)) {
+                setData(KEYS.REVIEWS, [
+                    { id: 1, rating: 5, highlight: "Clubs & Sports", comment: "Great balance between academics, Thursday clubs, and Friday sports.", author: "David O. (SS1)" }
+                ]);
+            }
+        }
+
+        function switchAuthMode(mode) {
+            document.getElementById("authError").style.display = "none";
+            const isLogin = mode === "login";
+            document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
+            document.getElementById("registerForm").style.display = isLogin ? "none" : "block";
+            document.getElementById("tabLoginBtn").classList.toggle("active", isLogin);
+            document.getElementById("tabRegisterBtn").classList.toggle("active", !isLogin);
+        }
+
+        function showAuthError(msg) {
+            const el = document.getElementById("authError");
+            el.textContent = msg;
+            el.style.display = "block";
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const fullName = document.getElementById("regFullName").value.trim();
+            const username = document.getElementById("regUsername").value.trim().toLowerCase();
+            const classLevel = document.getElementById("regClass").value;
+            const avatar = document.getElementById("regAvatar").value;
+            const password = document.getElementById("regPassword").value;
+
+            const users = getData(KEYS.USERS, []);
+            if (users.some(u => u.username === username)) {
+                showAuthError("That username is already taken.");
+                return;
+            }
+
+            const newUser = { fullName, username, classLevel, avatar, photoDataUrl: "", bio: "", password };
+            users.push(newUser);
+            setData(KEYS.USERS, users);
+            setData(KEYS.CURRENT_USER, newUser);
+            playLoginChime();
+            launchBadgeAndPortal(newUser);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById("loginUsername").value.trim().toLowerCase();
+            const password = document.getElementById("loginPassword").value;
+            const users = getData(KEYS.USERS, []);
+            const found = users.find(u => u.username === username && u.password === password);
+
+            if (!found) {
+                showAuthError("Invalid username or password.");
+                return;
+            }
+
+            setData(KEYS.CURRENT_USER, found);
+            playLoginChime();
+            launchBadgeAndPortal(found);
+        }
+
+        function launchBadgeAndPortal(user) {
+            if (!user) return;
+            document.getElementById("authSection").style.display = "none";
+            document.getElementById("appWrapper").style.display = "none";
+
+            const splash = document.getElementById("loginBadgeScreen");
+            const bar = document.getElementById("splashProgressBar");
+            renderAvatarContent(document.getElementById("splashAvatarBox"), user);
+            document.getElementById("splashName").textContent = `Welcome, ${user.fullName}!`;
+            document.getElementById("splashBadge").textContent = isCurrentUserAdmin()
+                ? `Admin • @${user.username}`
+                : `${user.classLevel} Student • @${user.username}`;
+
+            bar.style.transition = "none";
+            bar.style.width = "0%";
+            splash.style.display = "flex";
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    bar.style.transition = "width 4s linear";
+                    bar.style.width = "100%";
+                });
+            });
+
+            if (badgeTimer) clearTimeout(badgeTimer);
+            badgeTimer = setTimeout(() => {
+                splash.style.display = "none";
+                document.getElementById("appWrapper").style.display = "block";
+                renderAllAppData();
+            }, 4000);
+        }
+
+        function handleLogout() {
+            playLogoutTone();
+            localStorage.removeItem(KEYS.CURRENT_USER);
+            document.getElementById("appWrapper").style.display = "none";
+            document.getElementById("loginBadgeScreen").style.display = "none";
+            document.getElementById("authSection").style.display = "flex";
+            document.getElementById("loginForm").reset();
+        }
+
+        function showSection(sectionId, btnEl) {
+            document.querySelectorAll(".page-section").forEach(sec => sec.classList.remove("active"));
+            const sec = document.getElementById(sectionId);
+            if (sec) sec.classList.add("active");
+
+            document.querySelectorAll(".dock-btn").forEach(btn => {
+                btn.classList.toggle("active", btn === btnEl || btn.dataset.target === sectionId);
+            });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function renderDailyQuote() {
+            document.getElementById("dailyQuoteText").textContent = DAILY_QUOTES[quoteIndex];
+        }
+
+        function nextDailyQuote() {
+            quoteIndex = (quoteIndex + 1) % DAILY_QUOTES.length;
+            renderDailyQuote();
+        }
+
+        function renderFixtures() {
+            const now = new Date();
+            document.getElementById("todayDateBadge").textContent = now.toLocaleDateString("en-US", {
+                weekday: "long", month: "short", day: "numeric", year: "numeric"
+            });
+
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            const tDay = tomorrow.getDay();
+
+            if (WEEKLY_FIXTURES[tDay]) {
+                const fix = WEEKLY_FIXTURES[tDay];
+                document.getElementById("tomorrowDayLabel").textContent = `Tomorrow (${fix.day})`;
+                document.getElementById("tomorrowFixtureTitle").textContent = fix.title;
+                document.getElementById("tomorrowFixtureDesc").textContent = fix.desc;
+            } else {
+                const label = tDay === 6 ? "Saturday" : "Sunday";
+                document.getElementById("tomorrowDayLabel").textContent = `Tomorrow (${label})`;
+                document.getElementById("tomorrowFixtureTitle").textContent = "Weekend Study & Rest";
+                document.getElementById("tomorrowFixtureDesc").textContent = "No regular weekday fixture tomorrow. Get set for Monday Assembly.";
+            }
+
+            document.getElementById("weeklyFixturesList").innerHTML = Object.entries(WEEKLY_FIXTURES).map(([num, item]) => {
+                const next = Number(num) === tDay;
+                return `<li class="${next ? "is-tomorrow" : ""}"><span><strong>${item.day}:</strong> ${item.title}</span><span>${next ? "NEXT" : ""}</span></li>`;
+            }).join("");
+        }
+
+        function applyAdminPermissions() {
+            const admin = isCurrentUserAdmin();
+            document.querySelectorAll(".admin-only-form, .admin-only-card").forEach(el => {
+                el.style.display = admin ? "block" : "none";
+            });
+        }
+
+        function renderAllAppData() {
+            const user = getData(KEYS.CURRENT_USER, null);
+            if (!user) return;
+
+            renderAvatarContent(document.getElementById("headerAvatarBox"), user);
+            document.getElementById("headerUserName").textContent = `${user.fullName} (${user.classLevel})`;
+            document.getElementById("welcomeBannerTitle").textContent = `Welcome back, ${user.fullName}`;
+            document.getElementById("dashClassLabel").textContent = user.classLevel;
+            document.getElementById("classPageTitle").textContent = user.classLevel;
+
+            applyAdminPermissions();
+            renderDailyQuote();
+            renderFixtures();
+            renderSchoolInfo();
+            renderClassNewsAndReminders(user);
+            renderSpotlights();
+            renderTestsAndMatches();
+            renderEssays();
+            renderReviews();
+            renderProfileSection(user);
+        }
+
+        function renderSchoolInfo() {
+            const info = getData(KEYS.SCHOOL_INFO, {});
+            const name = info.name || "Juilliard Academy";
+            document.getElementById("headerSchoolName").textContent = name;
+            document.getElementById("aboutSchoolHeading").textContent = name;
+            document.getElementById("aboutMottoBadge").textContent = info.motto || "Excellence";
+            document.getElementById("homeSchoolDescription").textContent = info.about || "";
+            document.getElementById("homeSchoolMeta").innerHTML = `
+                <div class="info-tile"><small>Motto</small><strong>${info.motto || ""}</strong></div>
+                <div class="info-tile"><small>Location</small><strong>${info.location || ""}</strong></div>
+                <div class="info-tile"><small>Principal</small><strong>${info.principal || ""}</strong></div>
+            `;
+            document.getElementById("schoolNameInput").value = name;
+            document.getElementById("schoolMottoInput").value = info.motto || "";
+            document.getElementById("schoolLocationInput").value = info.location || "";
+            document.getElementById("schoolPrincipalInput").value = info.principal || "";
+            document.getElementById("schoolAboutInput").value = info.about || "";
+        }
+
+        function saveSchoolInfo(e) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            setData(KEYS.SCHOOL_INFO, {
+                name: document.getElementById("schoolNameInput").value.trim(),
+                motto: document.getElementById("schoolMottoInput").value.trim(),
+                location: document.getElementById("schoolLocationInput").value.trim(),
+                principal: document.getElementById("schoolPrincipalInput").value.trim(),
+                about: document.getElementById("schoolAboutInput").value.trim()
+            });
+            renderSchoolInfo();
+            alert("School info updated.");
+        }
+
+        function renderClassNewsAndReminders(user) {
+            const news = getData(KEYS.CLASS_NEWS, []).filter(n => n.classLevel === user.classLevel);
+            document.getElementById("classNewsList").innerHTML = news.length
+                ? news.map(n => `<div class="entry-box"><div class="entry-top"><strong>${n.title}</strong><span class="tag-red">${n.date} • ${n.author}</span></div><p>${n.body}</p></div>`).join("")
+                : `<p style="color: var(--muted); font-size: 0.9rem;">No news for ${user.classLevel} yet.</p>`;
+
+            document.getElementById("dashClassNewsPreview").innerHTML = news.slice(0, 2).map(n =>
+                `<div class="entry-box"><div class="entry-top"><strong>${n.title}</strong></div><p>${n.body}</p></div>`
+            ).join("") || `<p style="color: var(--muted); font-size: 0.88rem;">No class news yet.</p>`;
+
+            const reminders = getData(KEYS.REMINDERS, []).filter(r => r.username === user.username);
+            document.getElementById("userRemindersList").innerHTML = reminders.length
+                ? reminders.map(r => `<div class="entry-box"><div class="entry-top"><strong>${r.text}</strong><div><span class="tag-red">${r.date}</span> <button type="button" class="btn-ghost" style="padding: 0.15rem 0.5rem;" onclick="deleteReminder(${r.id})">Done</button></div></div></div>`).join("")
+                : `<p style="color: var(--muted); font-size: 0.9rem;">No reminders yet.</p>`;
+
+            document.getElementById("dashRemindersPreview").innerHTML = reminders.slice(0, 2).map(r =>
+                `<div class="entry-box"><div class="entry-top"><strong>${r.text}</strong><span class="tag-red">${r.date}</span></div></div>`
+            ).join("") || `<p style="color: var(--muted); font-size: 0.88rem;">No reminders yet.</p>`;
+        }
+
+        function addClassNews(e) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            const user = getData(KEYS.CURRENT_USER, null);
+            const all = getData(KEYS.CLASS_NEWS, []);
+            all.unshift({
+                id: Date.now(),
+                classLevel: user.classLevel,
+                title: document.getElementById("classNewsTitle").value.trim(),
+                body: document.getElementById("classNewsBody").value.trim(),
+                author: user.fullName,
+                date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            });
+            setData(KEYS.CLASS_NEWS, all);
+            e.target.reset();
+            renderClassNewsAndReminders(user);
+        }
+
+        function addUserReminder(e) {
+            e.preventDefault();
+            const user = getData(KEYS.CURRENT_USER, null);
+            if (!user) return;
+            const all = getData(KEYS.REMINDERS, []);
+            all.unshift({
+                id: Date.now(),
+                username: user.username,
+                text: document.getElementById("reminderText").value.trim(),
+                date: document.getElementById("reminderDate").value
+            });
+            setData(KEYS.REMINDERS, all);
+            e.target.reset();
+            renderClassNewsAndReminders(user);
+        }
+
+        function deleteReminder(id) {
+            const user = getData(KEYS.CURRENT_USER, null);
+            setData(KEYS.REMINDERS, getData(KEYS.REMINDERS, []).filter(r => r.id !== id));
+            renderClassNewsAndReminders(user);
+        }
+
+        function renderSpotlights() {
+            const spot = getData(KEYS.SPOTLIGHTS, { sotw: {}, kom: {} });
+            document.getElementById("sotwDisplay").innerHTML = `
+                <div class="spotlight-label">Student of the Week</div>
+                <h4>${spot.sotw.name || ""}</h4>
+                <p>${spot.sotw.reason || ""}</p>
+            `;
+            document.getElementById("komDisplay").innerHTML = `
+                <div class="spotlight-label">King of Math</div>
+                <h4>${spot.kom.name || ""}</h4>
+                <p>${spot.kom.reason || ""}</p>
+            `;
+        }
+
+        function updateSpotlight(e, type) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            const spot = getData(KEYS.SPOTLIGHTS, { sotw: {}, kom: {} });
+            if (type === "sotw") {
+                spot.sotw = { name: document.getElementById("sotwNameInput").value.trim(), reason: document.getElementById("sotwReasonInput").value.trim() };
+            } else {
+                spot.kom = { name: document.getElementById("komNameInput").value.trim(), reason: document.getElementById("komReasonInput").value.trim() };
+            }
+            setData(KEYS.SPOTLIGHTS, spot);
+            e.target.reset();
+            renderSpotlights();
+        }
+
+        function renderTestsAndMatches() {
+            document.getElementById("upcomingTestsList").innerHTML = getData(KEYS.TESTS, []).map(t =>
+                `<div class="entry-box"><div class="entry-top"><strong>${t.subject} (${t.classLevel})</strong><span class="tag-red">${t.date}</span></div><p>Topics: ${t.topics}</p></div>`
+            ).join("");
+
+            document.getElementById("sportsMatchesList").innerHTML = getData(KEYS.MATCHES, []).map(m =>
+                `<div class="entry-box"><div class="entry-top"><strong>${m.teams}</strong><span class="tag-solid">${m.sport} • ${m.date}</span></div></div>`
+            ).join("");
+        }
+
+        function addUpcomingTest(e) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            const tests = getData(KEYS.TESTS, []);
+            tests.unshift({
+                id: Date.now(),
+                subject: document.getElementById("testSubject").value.trim(),
+                classLevel: document.getElementById("testClass").value.trim().toUpperCase(),
+                date: document.getElementById("testDate").value,
+                topics: document.getElementById("testTopics").value.trim()
+            });
+            setData(KEYS.TESTS, tests);
+            e.target.reset();
+            renderTestsAndMatches();
+        }
+
+        function addSportsMatch(e) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            const matches = getData(KEYS.MATCHES, []);
+            matches.unshift({
+                id: Date.now(),
+                teams: document.getElementById("matchTeams").value.trim(),
+                sport: document.getElementById("matchSport").value.trim(),
+                date: document.getElementById("matchDate").value
+            });
+            setData(KEYS.MATCHES, matches);
+            e.target.reset();
+            renderTestsAndMatches();
+        }
+
+        function renderEssays() {
+            document.getElementById("essaysList").innerHTML = getData(KEYS.ESSAYS, []).map(es =>
+                `<div class="card"><div class="entry-top"><h3 style="color: var(--red);">${es.title}</h3><span class="tag-red">By ${es.author} • ${es.date}</span></div><p style="color: var(--muted); white-space: pre-line; margin-top: 0.6rem;">${es.body}</p></div>`
+            ).join("");
+        }
+
+        function addStudentEssay(e) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            const essays = getData(KEYS.ESSAYS, []);
+            essays.unshift({
+                id: Date.now(),
+                title: document.getElementById("essayTitle").value.trim(),
+                author: document.getElementById("essayAuthor").value.trim(),
+                body: document.getElementById("essayBody").value.trim(),
+                date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+            });
+            setData(KEYS.ESSAYS, essays);
+            e.target.reset();
+            renderEssays();
+        }
+
+        function renderReviews() {
+            document.getElementById("reviewsList").innerHTML = getData(KEYS.REVIEWS, []).map(rv =>
+                `<div class="card"><div class="entry-top"><strong>${rv.rating}/5 — ${rv.highlight}</strong><span class="tag-red">${rv.author}</span></div><p style="color: var(--muted); margin-top: 0.45rem;">${rv.comment}</p></div>`
+            ).join("");
+        }
+
+        function addSchoolReview(e) {
+            e.preventDefault();
+            const user = getData(KEYS.CURRENT_USER, null);
+            if (!user) return;
+            const reviews = getData(KEYS.REVIEWS, []);
+            reviews.unshift({
+                id: Date.now(),
+                rating: Number(document.getElementById("reviewRating").value),
+                highlight: document.getElementById("reviewHighlight").value.trim(),
+                comment: document.getElementById("reviewComment").value.trim(),
+                author: `${user.fullName} (${user.classLevel})`
+            });
+            setData(KEYS.REVIEWS, reviews);
+            e.target.reset();
+            renderReviews();
+        }
+
+        function handleProfilePhotoUpload(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const size = 220;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext("2d");
+                    const side = Math.min(img.width, img.height);
+                    ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+                    pendingPhotoDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+                    document.getElementById("profilePreviewAvatar").innerHTML = `<img src="${pendingPhotoDataUrl}" alt="Preview">`;
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeProfilePhoto() {
+            pendingPhotoDataUrl = "";
+            const user = getData(KEYS.CURRENT_USER, null);
+            if (!user) return;
+            user.photoDataUrl = "";
+            persistUpdatedUser(user);
+            renderAllAppData();
+        }
+
+        function persistUpdatedUser(updated) {
+            setData(KEYS.CURRENT_USER, updated);
+            const users = getData(KEYS.USERS, []);
+            const idx = users.findIndex(u => u.username === updated.username);
+            if (idx !== -1) {
+                users[idx] = updated;
+                setData(KEYS.USERS, users);
+            }
+        }
+
+        function renderProfileSection(user) {
+            renderAvatarContent(document.getElementById("profilePreviewAvatar"), user);
+            document.getElementById("profilePreviewName").textContent = user.fullName;
+            document.getElementById("profilePreviewMeta").textContent = `@${user.username} • ${user.classLevel}`;
+            document.getElementById("profilePreviewBio").textContent = user.bio || "No bio yet.";
+            document.getElementById("profFullName").value = user.fullName || "";
+            document.getElementById("profClass").value = user.classLevel || "SS1";
+            document.getElementById("profFallbackEmoji").value = user.avatar || "🧑🏾‍🎓";
+            document.getElementById("profBio").value = user.bio || "";
+            pendingPhotoDataUrl = null;
+        }
+
+        function saveUserProfile(e) {
+            e.preventDefault();
+            const user = getData(KEYS.CURRENT_USER, null);
+            if (!user) return;
+            user.fullName = document.getElementById("profFullName").value.trim();
+            user.classLevel = document.getElementById("profClass").value;
+            user.avatar = document.getElementById("profFallbackEmoji").value;
+            user.bio = document.getElementById("profBio").value.trim();
+            if (pendingPhotoDataUrl !== null) user.photoDataUrl = pendingPhotoDataUrl;
+            persistUpdatedUser(user);
+            renderAllAppData();
+            alert("Profile saved.");
+        }
+
+        (async function initPortal() {
+            applySavedTheme();
+            await loadCloudCache();
+            seedDefaultsIfEmpty();
+
+            const existingSession = getData(KEYS.CURRENT_USER, null);
+            if (existingSession) {
+                launchBadgeAndPortal(existingSession);
+            }
+        })();
+    </script>
+</body>
+</html>
