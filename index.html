@@ -849,7 +849,7 @@
 
             <!-- 2. ABOUT SCHOOL -->
             <section id="aboutSchoolSection" class="page-section">
-                <div class="page-title-row">
+               <div class="page-title-row">
                     <h2>About Juilliard Academy</h2>
                     <span class="tag-red" id="aboutMottoBadge">Excellence</span>
                 </div>
@@ -858,13 +858,26 @@
                     <div class="card-head">
                         <h3 id="aboutSchoolHeading">Juilliard Academy</h3>
                     </div>
+
+                    <div id="aboutSchoolVisuals" class="bento-2" style="margin-bottom: 1.15rem; display: none;">
+                        <div id="aboutSchoolPhotoCard" class="info-tile" style="display: none; text-align: center;">
+                            <img id="aboutSchoolPhotoImg" src="" alt="Juilliard Academy Campus" style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 10px; margin-bottom: 0.5rem;">
+                            <small>Our Campus</small>
+                        </div>
+                        <div id="aboutPrincipalPhotoCard" class="info-tile" style="display: none; text-align: center;">
+                            <img id="aboutPrincipalPhotoImg" src="" alt="School Principal" style="width: 130px; height: 130px; object-fit: cover; border-radius: 50%; border: 3px solid var(--red); margin: 0.4rem auto 0.6rem; display: block;">
+                            <small>School Principal</small>
+                            <strong id="aboutPrincipalPhotoCaption" style="font-size: 0.95rem;"></strong>
+                        </div>
+                    </div>
+
                     <p id="homeSchoolDescription" style="color: var(--muted); line-height: 1.7;"></p>
                     <div class="info-grid-3" id="homeSchoolMeta"></div>
                 </div>
 
                 <div class="card admin-only-card">
                     <div class="card-head">
-                        <h3>Admin: Edit School Info</h3>
+                        <h3>Admin: Edit School Info & Photos</h3>
                     </div>
                     <form class="admin-only-form" onsubmit="saveSchoolInfo(event)">
                         <div class="form-row-2">
@@ -887,11 +900,25 @@
                                 <input type="text" id="schoolPrincipalInput" required>
                             </div>
                         </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="schoolPhotoUpload">School Photo (Campus / Building)</label>
+                                <input type="file" id="schoolPhotoUpload" accept="image/*" onchange="handleSchoolAssetUpload(event, 'school')">
+                            </div>
+                            <div class="form-group">
+                                <label for="principalPhotoUpload">Principal Photo</label>
+                                <input type="file" id="principalPhotoUpload" accept="image/*" onchange="handleSchoolAssetUpload(event, 'principal')">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label for="schoolAboutInput">About Description</label>
                             <textarea id="schoolAboutInput" rows="3" required></textarea>
                         </div>
-                        <button type="submit" class="btn-primary">Save School Info</button>
+                        <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+                            <button type="submit" class="btn-primary">Save School Info</button>
+                            <button type="button" class="btn-ghost" onclick="clearSchoolPhoto('school')">Remove School Photo</button>
+                            <button type="button" class="btn-ghost" onclick="clearSchoolPhoto('principal')">Remove Principal Photo</button>
+                        </div>
                     </form>
                 </div>
             </section>
@@ -935,8 +962,8 @@
 
             <!-- 4. SPOTLIGHTS -->
             <section id="spotlightsSection" class="page-section">
-                <div class="page-title-row">
-                    <h2>Student Spotlights</h2>
+               <div class="page-title-row">
+                    <h2>Student Spotlights & Leadership</h2>
                 </div>
 
                 <div class="bento-2">
@@ -955,6 +982,48 @@
                     </div>
 
                     <div class="card">
+                        <div class="card-head"><h3>Most Innovative Student</h3></div>
+                        <div class="spotlight-panel" id="innovativeDisplay"></div>
+                        <form class="admin-only-form" onsubmit="updateSpotlight(event, 'innovative')">
+                            <div class="form-group">
+                                <input type="text" id="innovativeNameInput" placeholder="Student Name & Class" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="innovativeReasonInput" rows="2" placeholder="Project, invention, or creative idea..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Most Innovative</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head"><h3>School President</h3></div>
+                        <div class="spotlight-panel" id="presidentDisplay"></div>
+                        <form class="admin-only-form" onsubmit="updateSpotlight(event, 'president')">
+                            <div class="form-group">
+                                <input type="text" id="presidentNameInput" placeholder="President Name & Class" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="presidentReasonInput" rows="2" placeholder="Leadership vision or message..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Update President</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head"><h3>Vice President</h3></div>
+                        <div class="spotlight-panel" id="vpDisplay"></div>
+                        <form class="admin-only-form" onsubmit="updateSpotlight(event, 'vp')">
+                            <div class="form-group">
+                                <input type="text" id="vpNameInput" placeholder="Vice President Name & Class" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="vpReasonInput" rows="2" placeholder="Role & student initiatives..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Vice President</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
                         <div class="card-head"><h3>King of Math</h3></div>
                         <div class="spotlight-panel" id="komDisplay"></div>
                         <form class="admin-only-form" onsubmit="updateSpotlight(event, 'kom')">
@@ -965,6 +1034,20 @@
                                 <textarea id="komReasonInput" rows="2" placeholder="Math challenge score or reason..." required></textarea>
                             </div>
                             <button type="submit" class="btn-primary">Update King of Math</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head"><h3>Queen of Math</h3></div>
+                        <div class="spotlight-panel" id="qomDisplay"></div>
+                        <form class="admin-only-form" onsubmit="updateSpotlight(event, 'qom')">
+                            <div class="form-group">
+                                <input type="text" id="qomNameInput" placeholder="Student Name & Class" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="qomReasonInput" rows="2" placeholder="Math challenge score or reason..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Queen of Math</button>
                         </form>
                     </div>
                 </div>
@@ -1353,22 +1436,31 @@
             }
         }
 
+        let pendingSchoolPhoto = null;
+        let pendingPrincipalPhoto = null;
+
         function seedDefaultsIfEmpty() {
             if (!getData(KEYS.SCHOOL_INFO, null)) {
-                setData(KEYS.SCHOOL_INFO, {
-                    name: "Juilliard Academy",
-                    motto: "Excellence, Creativity & Discipline",
-                    location: "Main Academic Campus",
-                    principal: "Dr. A. B. Adeyemi",
-                    about: "Juilliard Academy empowers students through strong academics, character formation, clubs, and sports."
-                });
-            }
+    setData(KEYS.SCHOOL_INFO, {
+        name: "Juilliard Academy",
+        motto: "Excellence, Creativity & Discipline",
+        location: "Main Academic Campus",
+        principal: "Dr. A. B. Adeyemi",
+        about: "Juilliard Academy empowers students through strong academics, character formation, clubs, and sports.",
+        schoolPhotoUrl: "",
+        principalPhotoUrl: ""
+    });
+}
             if (!getData(KEYS.SPOTLIGHTS, null)) {
-                setData(KEYS.SPOTLIGHTS, {
-                    sotw: { name: "Zainab Balogun (SS1)", reason: "Consistent punctuality and leadership in science practicals." },
-                    kom: { name: "Tunde Bakare (SS2)", reason: "Top score in the weekly Mathematics & Algebra challenge." }
-                });
-            }
+    setData(KEYS.SPOTLIGHTS, {
+        sotw: { name: "Zainab Balogun (SS1)", reason: "Consistent punctuality and leadership in science practicals." },
+        president: { name: "Chinedu Okafor (SS3)", reason: "Leading student council initiatives and peer mentorship." },
+        vp: { name: "Amina Yusuf (SS2)", reason: "Coordinating inter-club activities and student welfare." },
+        innovative: { name: "Kai Nkem (SS1)", reason: "Designed and launched the Juilliard Academy digital student portal." },
+        kom: { name: "Tunde Bakare (SS2)", reason: "Top score in the weekly Mathematics & Algebra challenge." },
+        qom: { name: "Chisom Nwosu (SS1)", reason: "Highest accuracy in Further Mathematics & Geometry problem sets." }
+    });
+}
             if (!getData(KEYS.CLASS_NEWS, null)) {
                 setData(KEYS.CLASS_NEWS, [
                     { id: 1, classLevel: "SS1", title: "Lab Coat Reminder", body: "Bring lab coats for Thursday's science practical.", author: "Class Rep", date: "Today" }
@@ -1574,38 +1666,107 @@
             renderProfileSection(user);
         }
 
-        function renderSchoolInfo() {
-            const info = getData(KEYS.SCHOOL_INFO, {});
-            const name = info.name || "Juilliard Academy";
-            document.getElementById("headerSchoolName").textContent = name;
-            document.getElementById("aboutSchoolHeading").textContent = name;
-            document.getElementById("aboutMottoBadge").textContent = info.motto || "Excellence";
-            document.getElementById("homeSchoolDescription").textContent = info.about || "";
-            document.getElementById("homeSchoolMeta").innerHTML = `
-                <div class="info-tile"><small>Motto</small><strong>${info.motto || ""}</strong></div>
-                <div class="info-tile"><small>Location</small><strong>${info.location || ""}</strong></div>
-                <div class="info-tile"><small>Principal</small><strong>${info.principal || ""}</strong></div>
-            `;
-            document.getElementById("schoolNameInput").value = name;
-            document.getElementById("schoolMottoInput").value = info.motto || "";
-            document.getElementById("schoolLocationInput").value = info.location || "";
-            document.getElementById("schoolPrincipalInput").value = info.principal || "";
-            document.getElementById("schoolAboutInput").value = info.about || "";
+let pendingSchoolPhoto = null;
+let pendingPrincipalPhoto = null;
+
+function handleSchoolAssetUpload(e, target) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const maxW = target === "school" ? 640 : 280;
+            const scale = Math.min(1, maxW / img.width);
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+            if (target === "school") {
+                pendingSchoolPhoto = dataUrl;
+            } else {
+                pendingPrincipalPhoto = dataUrl;
+            }
+        };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearSchoolPhoto(target) {
+    if (!isCurrentUserAdmin()) return;
+    const info = getData(KEYS.SCHOOL_INFO, {});
+    if (target === "school") {
+        info.schoolPhotoUrl = "";
+        pendingSchoolPhoto = null;
+    } else {
+        info.principalPhotoUrl = "";
+        pendingPrincipalPhoto = null;
+    }
+    setData(KEYS.SCHOOL_INFO, info);
+    renderSchoolInfo();
+}
+        
+       function renderSchoolInfo() {
+    const info = getData(KEYS.SCHOOL_INFO, {});
+    const name = info.name || "Juilliard Academy";
+    document.getElementById("headerSchoolName").textContent = name;
+    document.getElementById("aboutSchoolHeading").textContent = name;
+    document.getElementById("aboutMottoBadge").textContent = info.motto || "Excellence";
+    document.getElementById("homeSchoolDescription").textContent = info.about || "";
+
+    const hasSchoolPhoto = Boolean(info.schoolPhotoUrl);
+    const hasPrincipalPhoto = Boolean(info.principalPhotoUrl);
+    const visualsWrap = document.getElementById("aboutSchoolVisuals");
+    const schoolCard = document.getElementById("aboutSchoolPhotoCard");
+    const principalCard = document.getElementById("aboutPrincipalPhotoCard");
+
+    if (visualsWrap) visualsWrap.style.display = (hasSchoolPhoto || hasPrincipalPhoto) ? "grid" : "none";
+    if (schoolCard) schoolCard.style.display = hasSchoolPhoto ? "block" : "none";
+    if (principalCard) principalCard.style.display = hasPrincipalPhoto ? "block" : "none";
+
+    if (hasSchoolPhoto && document.getElementById("aboutSchoolPhotoImg")) {
+        document.getElementById("aboutSchoolPhotoImg").src = info.schoolPhotoUrl;
+    }
+    if (hasPrincipalPhoto && document.getElementById("aboutPrincipalPhotoImg")) {
+        document.getElementById("aboutPrincipalPhotoImg").src = info.principalPhotoUrl;
+        if (document.getElementById("aboutPrincipalPhotoCaption")) {
+            document.getElementById("aboutPrincipalPhotoCaption").textContent = info.principal || "";
         }
+    }
+
+    document.getElementById("homeSchoolMeta").innerHTML = `
+        <div class="info-tile"><small>Motto</small><strong>${info.motto || ""}</strong></div>
+        <div class="info-tile"><small>Location</small><strong>${info.location || ""}</strong></div>
+        <div class="info-tile"><small>Principal</small><strong>${info.principal || ""}</strong></div>
+    `;
+    document.getElementById("schoolNameInput").value = name;
+    document.getElementById("schoolMottoInput").value = info.motto || "";
+    document.getElementById("schoolLocationInput").value = info.location || "";
+    document.getElementById("schoolPrincipalInput").value = info.principal || "";
+    document.getElementById("schoolAboutInput").value = info.about || "";
+}
 
         function saveSchoolInfo(e) {
-            e.preventDefault();
-            if (!isCurrentUserAdmin()) return;
-            setData(KEYS.SCHOOL_INFO, {
-                name: document.getElementById("schoolNameInput").value.trim(),
-                motto: document.getElementById("schoolMottoInput").value.trim(),
-                location: document.getElementById("schoolLocationInput").value.trim(),
-                principal: document.getElementById("schoolPrincipalInput").value.trim(),
-                about: document.getElementById("schoolAboutInput").value.trim()
-            });
-            renderSchoolInfo();
-            alert("School info updated.");
-        }
+    e.preventDefault();
+    if (!isCurrentUserAdmin()) return;
+    const prev = getData(KEYS.SCHOOL_INFO, {});
+    setData(KEYS.SCHOOL_INFO, {
+        name: document.getElementById("schoolNameInput").value.trim(),
+        motto: document.getElementById("schoolMottoInput").value.trim(),
+        location: document.getElementById("schoolLocationInput").value.trim(),
+        principal: document.getElementById("schoolPrincipalInput").value.trim(),
+        about: document.getElementById("schoolAboutInput").value.trim(),
+        schoolPhotoUrl: pendingSchoolPhoto !== null ? pendingSchoolPhoto : (prev.schoolPhotoUrl || ""),
+        principalPhotoUrl: pendingPrincipalPhoto !== null ? pendingPrincipalPhoto : (prev.principalPhotoUrl || "")
+    });
+    pendingSchoolPhoto = null;
+    pendingPrincipalPhoto = null;
+    renderSchoolInfo();
+    alert("School info and photos updated.");
+}
 
         function renderClassNewsAndReminders(user) {
             const news = getData(KEYS.CLASS_NEWS, []).filter(n => n.classLevel === user.classLevel);
@@ -1667,34 +1828,53 @@
             renderClassNewsAndReminders(user);
         }
 
-        function renderSpotlights() {
-            const spot = getData(KEYS.SPOTLIGHTS, { sotw: {}, kom: {} });
-            document.getElementById("sotwDisplay").innerHTML = `
-                <div class="spotlight-label">Student of the Week</div>
-                <h4>${spot.sotw.name || ""}</h4>
-                <p>${spot.sotw.reason || ""}</p>
-            `;
-            document.getElementById("komDisplay").innerHTML = `
-                <div class="spotlight-label">King of Math</div>
-                <h4>${spot.kom.name || ""}</h4>
-                <p>${spot.kom.reason || ""}</p>
+     function renderSpotlights() {
+    const spot = getData(KEYS.SPOTLIGHTS, {});
+    const roles = [
+        { key: "sotw", id: "sotwDisplay", label: "Student of the Week" },
+        { key: "president", id: "presidentDisplay", label: "School President" },
+        { key: "vp", id: "vpDisplay", label: "Vice President" },
+        { key: "innovative", id: "innovativeDisplay", label: "Most Innovative Student" },
+        { key: "kom", id: "komDisplay", label: "King of Math" },
+        { key: "qom", id: "qomDisplay", label: "Queen of Math" }
+    ];
+
+    roles.forEach(role => {
+        const entry = spot[role.key] || { name: "Not assigned yet", reason: "" };
+        const el = document.getElementById(role.id);
+        if (el) {
+            el.innerHTML = `
+                <div class="spotlight-label">${role.label}</div>
+                <h4>${entry.name || "Not assigned yet"}</h4>
+                <p>${entry.reason || ""}</p>
             `;
         }
+    });
+}
 
-        function updateSpotlight(e, type) {
-            e.preventDefault();
-            if (!isCurrentUserAdmin()) return;
-            const spot = getData(KEYS.SPOTLIGHTS, { sotw: {}, kom: {} });
-            if (type === "sotw") {
-                spot.sotw = { name: document.getElementById("sotwNameInput").value.trim(), reason: document.getElementById("sotwReasonInput").value.trim() };
-            } else {
-                spot.kom = { name: document.getElementById("komNameInput").value.trim(), reason: document.getElementById("komReasonInput").value.trim() };
-            }
-            setData(KEYS.SPOTLIGHTS, spot);
-            e.target.reset();
-            renderSpotlights();
-        }
+      function updateSpotlight(e, type) {
+    e.preventDefault();
+    if (!isCurrentUserAdmin()) return;
+    const spot = getData(KEYS.SPOTLIGHTS, {});
+    const inputMap = {
+        sotw: ["sotwNameInput", "sotwReasonInput"],
+        president: ["presidentNameInput", "presidentReasonInput"],
+        vp: ["vpNameInput", "vpReasonInput"],
+        innovative: ["innovativeNameInput", "innovativeReasonInput"],
+        kom: ["komNameInput", "komReasonInput"],
+        qom: ["qomNameInput", "qomReasonInput"]
+    };
+    const ids = inputMap[type];
+    if (!ids) return;
 
+    spot[type] = {
+        name: document.getElementById(ids[0]).value.trim(),
+        reason: document.getElementById(ids[1]).value.trim()
+    };
+    setData(KEYS.SPOTLIGHTS, spot);
+    e.target.reset();
+    renderSpotlights();
+}
         function renderTestsAndMatches() {
             document.getElementById("upcomingTestsList").innerHTML = getData(KEYS.TESTS, []).map(t =>
                 `<div class="entry-box"><div class="entry-top"><strong>${t.subject} (${t.classLevel})</strong><span class="tag-red">${t.date}</span></div><p>Topics: ${t.topics}</p></div>`
