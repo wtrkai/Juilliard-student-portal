@@ -36,7 +36,7 @@
             --shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
         }
 
-        * {
+        *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -276,7 +276,7 @@
             transition: width 4s linear;
         }
 
-        /* ================= MODERN TOPBAR & BOTTOM DOCK ================= */
+        /* ================= TOPBAR & MAIN ================= */
         #appWrapper {
             display: none;
             min-height: 100vh;
@@ -287,9 +287,7 @@
             position: sticky;
             top: 0;
             z-index: 200;
-            background: rgba(200, 16, 46, 0.94);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(200, 16, 46, 0.95);
             color: #ffffff;
             padding: 0.85rem 1.5rem;
             display: flex;
@@ -300,7 +298,7 @@
         }
 
         body.dark-mode .topbar {
-            background: rgba(21, 25, 33, 0.88);
+            background: rgba(21, 25, 33, 0.95);
             border-bottom: 1px solid var(--border);
         }
 
@@ -388,7 +386,6 @@
             padding: 1.75rem 1.5rem 1rem;
         }
 
-        /* Quote Strip */
         .quote-strip {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -419,7 +416,6 @@
             font-size: 0.96rem;
         }
 
-        /* Sections & Cards */
         .page-section {
             display: none;
             animation: rise 0.28s var(--ease);
@@ -562,6 +558,12 @@
             white-space: pre-line;
         }
 
+        .entry-actions {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.55rem;
+        }
+
         .spotlight-panel {
             text-align: center;
             padding: 1.35rem 1rem;
@@ -636,6 +638,19 @@
             font-size: 2.3rem;
         }
 
+        .admin-only-card,
+        .admin-only-form {
+            display: none;
+        }
+
+        body.is-admin .admin-only-card {
+            display: block;
+        }
+
+        body.is-admin .admin-only-form {
+            display: block;
+        }
+
         /* ================= FLOATING BOTTOM BAR ================= */
         .bottom-dock {
             position: fixed;
@@ -644,9 +659,7 @@
             transform: translateX(-50%);
             z-index: 400;
             width: min(960px, calc(100% - 24px));
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 0.42rem;
@@ -656,11 +669,6 @@
             justify-content: space-between;
             gap: 0.25rem;
             overflow-x: auto;
-        }
-
-        body.dark-mode .bottom-dock {
-            background: rgba(21, 25, 33, 0.9);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
         }
 
         .dock-btn {
@@ -723,7 +731,7 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label for="loginUsername">Username</label>
-                    <input type="text" id="loginUsername" placeholder="e.g. mavoswag0" required>
+                    <input type="text" id="loginUsername" placeholder="e.g. wtr.kai" required>
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Password</label>
@@ -849,7 +857,7 @@
 
             <!-- 2. ABOUT SCHOOL -->
             <section id="aboutSchoolSection" class="page-section">
-               <div class="page-title-row">
+                <div class="page-title-row">
                     <h2>About Juilliard Academy</h2>
                     <span class="tag-red" id="aboutMottoBadge">Excellence</span>
                 </div>
@@ -932,12 +940,12 @@
                 <div class="bento-2">
                     <div class="card">
                         <div class="card-head"><h3>Class News</h3></div>
-                        <form class="admin-only-form" onsubmit="addClassNews(event)" style="margin-bottom: 1.15rem;">
+                        <form class="admin-only-form" onsubmit="addClassNews(event)" style="margin-bottom: 1rem;">
                             <div class="form-group">
-                                <input type="text" id="classNewsTitle" placeholder="News headline" required>
+                                <input type="text" id="newsTitleInput" placeholder="Announcement title..." required>
                             </div>
                             <div class="form-group">
-                                <textarea id="classNewsBody" rows="2" placeholder="Announcement details..." required></textarea>
+                                <textarea id="newsBodyInput" rows="2" placeholder="Write class announcement..." required></textarea>
                             </div>
                             <button type="submit" class="btn-primary">Post Class News</button>
                         </form>
@@ -945,24 +953,24 @@
                     </div>
 
                     <div class="card">
-                        <div class="card-head"><h3>My Reminders</h3></div>
-                        <form onsubmit="addUserReminder(event)" style="margin-bottom: 1.15rem;">
+                        <div class="card-head"><h3>Class Reminders</h3></div>
+                        <form onsubmit="addReminder(event)" style="margin-bottom: 1rem;">
                             <div class="form-group">
-                                <input type="text" id="reminderText" placeholder="Task or assignment reminder" required>
+                                <input type="text" id="reminderTextInput" placeholder="Reminder or homework task..." required>
                             </div>
                             <div class="form-group">
-                                <input type="date" id="reminderDate" required>
+                                <input type="date" id="reminderDateInput" required>
                             </div>
                             <button type="submit" class="btn-primary">Add Reminder</button>
                         </form>
-                        <div id="userRemindersList"></div>
+                        <div id="remindersList"></div>
                     </div>
                 </div>
             </section>
 
             <!-- 4. SPOTLIGHTS -->
             <section id="spotlightsSection" class="page-section">
-               <div class="page-title-row">
+                <div class="page-title-row">
                     <h2>Student Spotlights & Leadership</h2>
                 </div>
 
@@ -1053,143 +1061,30 @@
                 </div>
             </section>
 
-            <!-- 5. TESTS & SPORTS -->
-            <section id="academicsSportsSection" class="page-section">
-                <div class="page-title-row">
-                    <h2>Tests & Sports Matches</h2>
-                </div>
-
-                <div class="bento-2">
-                    <div class="card">
-                        <div class="card-head"><h3>Upcoming Tests</h3></div>
-                        <form class="admin-only-form" onsubmit="addUpcomingTest(event)" style="margin-bottom: 1.15rem;">
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <input type="text" id="testSubject" placeholder="Subject" required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" id="testClass" placeholder="Class (e.g. SS1)" required>
-                                </div>
-                            </div>
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <input type="date" id="testDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" id="testTopics" placeholder="Topics" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn-primary">Add Test</button>
-                        </form>
-                        <div id="upcomingTestsList"></div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-head"><h3>Upcoming Sports Matches</h3></div>
-                        <form class="admin-only-form" onsubmit="addSportsMatch(event)" style="margin-bottom: 1.15rem;">
-                            <div class="form-group">
-                                <input type="text" id="matchTeams" placeholder="Fixture (e.g. Red House vs Blue House)" required>
-                            </div>
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <input type="text" id="matchSport" placeholder="Sport" required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="date" id="matchDate" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn-primary">Add Match</button>
-                        </form>
-                        <div id="sportsMatchesList"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 6. ESSAYS -->
-            <section id="essaysSection" class="page-section">
-                <div class="page-title-row">
-                    <h2>Student Essays</h2>
-                </div>
-
-                <div class="card admin-only-card">
-                    <div class="card-head"><h3>Publish Student Essay</h3></div>
-                    <form class="admin-only-form" onsubmit="addStudentEssay(event)">
-                        <div class="form-row-2">
-                            <div class="form-group">
-                                <input type="text" id="essayTitle" placeholder="Essay Title" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="essayAuthor" placeholder="Author & Class" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="essayBody" rows="4" placeholder="Paste student essay here..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary">Publish Essay</button>
-                    </form>
-                </div>
-
-                <div id="essaysList"></div>
-            </section>
-
-            <!-- 7. REVIEWS -->
-            <section id="reviewsSection" class="page-section">
-                <div class="page-title-row">
-                    <h2>School Reviews</h2>
-                </div>
-
-                <div class="card">
-                    <div class="card-head"><h3>Leave a Review</h3></div>
-                    <form onsubmit="addSchoolReview(event)">
-                        <div class="form-row-2">
-                            <div class="form-group">
-                                <select id="reviewRating">
-                                    <option value="5">5 / 5 — Excellent</option>
-                                    <option value="4">4 / 5 — Very Good</option>
-                                    <option value="3">3 / 5 — Good</option>
-                                    <option value="2">2 / 5 — Fair</option>
-                                    <option value="1">1 / 5 — Needs Work</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="reviewHighlight" placeholder="Highlight (e.g. Academics, Clubs, Sports)" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="reviewComment" rows="3" placeholder="Share your thoughts..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary">Submit Review</button>
-                    </form>
-                </div>
-
-                <div id="reviewsList"></div>
-            </section>
-
-            <!-- 8. PROFILE -->
+            <!-- 5. PROFILE -->
             <section id="profileSection" class="page-section">
                 <div class="page-title-row">
-                    <h2>My Profile</h2>
+                    <h2>My Student Profile</h2>
                 </div>
 
                 <div class="card">
                     <div class="profile-banner">
-                        <div class="avatar-ring profile-avatar" id="profilePreviewAvatar">🧑🏾‍🎓</div>
+                        <div class="avatar-ring profile-avatar" id="profileAvatarPreview">🧑🏾‍🎓</div>
                         <div>
-                            <h3 id="profilePreviewName">Student Name</h3>
-                            <p style="color: var(--muted); font-size: 0.9rem;" id="profilePreviewMeta">@username • SS1</p>
-                            <p style="font-size: 0.9rem; margin-top: 0.3rem;" id="profilePreviewBio"></p>
+                            <h3 id="profileDisplayName">Student Name</h3>
+                            <p style="color: var(--muted); font-size: 0.9rem;" id="profileDisplayMeta">@username • SS1</p>
                         </div>
                     </div>
 
-                    <form onsubmit="saveUserProfile(event)">
+                    <form onsubmit="saveProfile(event)">
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label for="profFullName">Full Name</label>
-                                <input type="text" id="profFullName" required>
+                                <label for="profileFullNameInput">Full Name</label>
+                                <input type="text" id="profileFullNameInput" required>
                             </div>
                             <div class="form-group">
-                                <label for="profClass">Class Level</label>
-                                <select id="profClass" required>
+                                <label for="profileClassInput">Class Level</label>
+                                <select id="profileClassInput" required>
                                     <option value="JSS1">JSS 1</option>
                                     <option value="JSS2">JSS 2</option>
                                     <option value="JSS3">JSS 3</option>
@@ -1201,12 +1096,8 @@
                         </div>
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label for="profPhotoUpload">Upload Photo (from device)</label>
-                                <input type="file" id="profPhotoUpload" accept="image/*" onchange="handleProfilePhotoUpload(event)">
-                            </div>
-                            <div class="form-group">
-                                <label for="profFallbackEmoji">Icon Fallback</label>
-                                <select id="profFallbackEmoji">
+                                <label for="profileIconSelect">Icon / Avatar</label>
+                                <select id="profileIconSelect">
                                     <option value="🧑🏾‍🎓">🧑🏾‍🎓 Student</option>
                                     <option value="👩🏾‍🎓">👩🏾‍🎓 Scholar</option>
                                     <option value="⚽">⚽ Athlete</option>
@@ -1214,299 +1105,203 @@
                                     <option value="✍️">✍️ Writer</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="profilePhotoUpload">Custom Profile Photo</label>
+                                <input type="file" id="profilePhotoUpload" accept="image/*" onchange="handleProfilePhotoUpload(event)">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="profBio">Bio</label>
-                            <textarea id="profBio" rows="2" placeholder="Favorite subjects, house, or goals..."></textarea>
-                        </div>
-                        <div style="display: flex; gap: 0.7rem; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
                             <button type="submit" class="btn-primary">Save Profile</button>
-                            <button type="button" class="btn-ghost" onclick="removeProfilePhoto()">Remove Photo</button>
+                            <button type="button" class="btn-ghost" onclick="clearCustomPhoto()">Use Icon Instead</button>
                         </div>
                     </form>
                 </div>
             </section>
         </main>
 
-        <!-- BOTTOM NAVIGATION DOCK -->
-        <nav class="bottom-dock" aria-label="Primary Navigation">
-            <button type="button" class="dock-btn active" data-target="homeSection" onclick="showSection('homeSection', this)">Home</button>
-            <button type="button" class="dock-btn" data-target="aboutSchoolSection" onclick="showSection('aboutSchoolSection', this)">About</button>
-            <button type="button" class="dock-btn" data-target="classSection" onclick="showSection('classSection', this)">Class</button>
-            <button type="button" class="dock-btn" data-target="spotlightsSection" onclick="showSection('spotlightsSection', this)">Spotlights</button>
-            <button type="button" class="dock-btn" data-target="academicsSportsSection" onclick="showSection('academicsSportsSection', this)">Tests & Sports</button>
-            <button type="button" class="dock-btn" data-target="essaysSection" onclick="showSection('essaysSection', this)">Essays</button>
-            <button type="button" class="dock-btn" data-target="reviewsSection" onclick="showSection('reviewsSection', this)">Reviews</button>
-            <button type="button" class="dock-btn" data-target="profileSection" onclick="showSection('profileSection', this)">Profile</button>
+        <!-- FLOATING BOTTOM DOCK -->
+        <nav class="bottom-dock" aria-label="Portal Navigation">
+            <button type="button" class="dock-btn active" data-target="homeSection" onclick="showSection('homeSection')">Home</button>
+            <button type="button" class="dock-btn" data-target="aboutSchoolSection" onclick="showSection('aboutSchoolSection')">About</button>
+            <button type="button" class="dock-btn" data-target="classSection" onclick="showSection('classSection')">Class Hub</button>
+            <button type="button" class="dock-btn" data-target="spotlightsSection" onclick="showSection('spotlightsSection')">Spotlights</button>
+            <button type="button" class="dock-btn" data-target="profileSection" onclick="showSection('profileSection')">Profile</button>
         </nav>
     </div>
 
     <script>
+        const SUPABASE_URL = "YOUR_SUPABASE_URL";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const ADMIN_USERNAMES = ["wtr.kai"];
+
+        const supabaseClient = (window.supabase && SUPABASE_URL.startsWith("http"))
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
         const KEYS = {
             USERS: "juilliard_dock_users_v1",
-            CURRENT_USER: "juilliard_dock_current_user_v1",
-            SCHOOL_INFO: "juilliard_dock_info_v1",
-            CLASS_NEWS: "juilliard_dock_class_news_v1",
-            REMINDERS: "juilliard_dock_reminders_v1",
+            SESSION: "juilliard_dock_session_v1",
+            SCHOOL_INFO: "juilliard_dock_school_v1",
             SPOTLIGHTS: "juilliard_dock_spotlights_v1",
-            TESTS: "juilliard_dock_tests_v1",
-            MATCHES: "juilliard_dock_matches_v1",
-            ESSAYS: "juilliard_dock_essays_v1",
-            REVIEWS: "juilliard_dock_reviews_v1",
-            DARK_MODE: "juilliard_dock_dark_mode_v1"
+            CLASS_NEWS: "juilliard_dock_news_v1",
+            REMINDERS: "juilliard_dock_reminders_v1",
+            DARK_MODE: "juilliard_dock_dark_v1"
         };
 
-        const SUPABASE_URL = "https://sqffdwkqtahluckgskzp.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_EGS_pbqEJGSghAGmIgS5Lw_eW2G9s1I";
-        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const CLOUD_KEYS = new Set([
-            KEYS.USERS,
-            KEYS.SCHOOL_INFO,
-            KEYS.CLASS_NEWS,
-            KEYS.SPOTLIGHTS,
-            KEYS.TESTS,
-            KEYS.MATCHES,
-            KEYS.ESSAYS,
-            KEYS.REVIEWS
-        ]);
-
-        const cloudCache = {};
-
-        const ADMIN_USERNAME = "wtr.kai";
-
-        function isCurrentUserAdmin() {
-            const user = getData(KEYS.CURRENT_USER, null);
-            return Boolean(user && user.username && user.username.toLowerCase() === ADMIN_USERNAME.toLowerCase());
-        }
-
-        function playLoginChime() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-
-                const ctx = new AudioCtx();
-                const now = ctx.currentTime;
-                const notes = [523.25, 659.25, 783.99];
-
-                notes.forEach((freq, idx) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-
-                    osc.type = "sine";
-                    osc.frequency.setValueAtTime(freq, now + idx * 0.11);
-
-                    gain.gain.setValueAtTime(0.001, now + idx * 0.11);
-                    gain.gain.exponentialRampToValueAtTime(0.14, now + idx * 0.11 + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.11 + 0.35);
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-
-                    osc.start(now + idx * 0.11);
-                    osc.stop(now + idx * 0.11 + 0.36);
-                });
-            } catch (err) {
-                console.warn("Login chime skipped:", err);
-            }
-        }
-
-        function playLogoutTone() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-
-                const ctx = new AudioCtx();
-                const now = ctx.currentTime;
-                const notes = [783.99, 659.25, 523.25];
-
-                notes.forEach((freq, idx) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-
-                    osc.type = "sine";
-                    osc.frequency.setValueAtTime(freq, now + idx * 0.11);
-
-                    gain.gain.setValueAtTime(0.001, now + idx * 0.11);
-                    gain.gain.exponentialRampToValueAtTime(0.13, now + idx * 0.11 + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.11 + 0.36);
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-
-                    osc.start(now + idx * 0.11);
-                    osc.stop(now + idx * 0.11 + 0.37);
-                });
-            } catch (err) {
-                console.warn("Logout tone skipped:", err);
-            }
-        }
-
-        const DAILY_QUOTES = [
-            "\"Success is the sum of small efforts, repeated day in and day out.\" — Robert Collier",
-            "\"Education is the most powerful weapon which you can use to change the world.\" — Nelson Mandela",
-            "\"Do not wait for opportunity. Create it through discipline and curiosity.\"",
-            "\"Excellence is not an act, but a habit.\" — Aristotle",
-            "\"The future belongs to those who prepare for it today.\" — Malcolm X"
+        const QUOTES = [
+            '"Success is the sum of small efforts, repeated day in and day out." — Robert Collier',
+            '"Discipline is the bridge between goals and accomplishment." — Jim Rohn',
+            '"Education is the most powerful weapon which you can use to change the world." — Nelson Mandela',
+            '"Small daily improvements over time lead to stunning results." — Robin Sharma'
         ];
 
         const WEEKLY_FIXTURES = {
-            1: { day: "Monday", title: "General School Assembly", desc: "Morning parade, national anthem, announcements & principal's address." },
-            2: { day: "Tuesday", title: "Character Development Program", desc: "Leadership values, ethics workshop, and mentorship session." },
-            3: { day: "Wednesday", title: "Mid-Week Fellowship", desc: "Moral reflection, inspirational talks, and student choir session." },
-            4: { day: "Thursday", title: "School Clubs & Societies", desc: "STEM/JET Club, Press Club, Chess Club, Debate & Literary Society." },
-            5: { day: "Friday", title: "Inter-House & School Sports", desc: "Football, athletics, basketball, and house fitness training." }
+            0: { day: "Sunday", title: "Prep & Rest Day", desc: "Review weekly notes and pack uniforms for Monday." },
+            1: { day: "Monday", title: "Assembly & Core Academics", desc: "Morning assembly, Mathematics, and English classes." },
+            2: { day: "Tuesday", title: "Sciences & Lab Session", desc: "Physics, Chemistry, Biology, and practical work." },
+            3: { day: "Wednesday", title: "Midweek Studies & Tutorials", desc: "Subject clinics, essays, and problem-solving drills." },
+            4: { day: "Thursday", title: "Clubs & Societies Day", desc: "Literary/debate, STEM, music, and leadership clubs." },
+            5: { day: "Friday", title: "Sports & House Fixtures", desc: "Afternoon football matches, athletics, and house spirit." },
+            6: { day: "Saturday", title: "Study & Skill Practice", desc: "Independent revision, music/chess practice, and rest." }
         };
 
-        let quoteIndex = new Date().getDate() % DAILY_QUOTES.length;
-        let badgeTimer = null;
-        let pendingPhotoDataUrl = null;
-
-        async function loadCloudCache() {
-            try {
-                const { data, error } = await sbClient
-                    .from("portal_data")
-                    .select("key, payload");
-
-                if (error) {
-                    console.warn("Supabase load error:", error.message);
-                    return;
-                }
-
-                (data || []).forEach(row => {
-                    cloudCache[row.key] = row.payload;
-                });
-            } catch (err) {
-                console.warn("Network load skipped:", err);
-            }
-        }
+        const cloudCache = {};
+        let currentUser = null;
+        let quoteIndex = 0;
+        let pendingSchoolPhoto = null;
+        let pendingPrincipalPhoto = null;
+        let pendingProfilePhoto = null;
 
         function getData(key, fallback) {
-            if (CLOUD_KEYS.has(key) && Object.prototype.hasOwnProperty.call(cloudCache, key)) {
-                return cloudCache[key] ?? fallback;
+            if (Object.prototype.hasOwnProperty.call(cloudCache, key)) {
+                return cloudCache[key];
             }
             try {
                 const raw = localStorage.getItem(key);
-                return raw ? JSON.parse(raw) : fallback;
+                return raw !== null ? JSON.parse(raw) : fallback;
             } catch {
                 return fallback;
             }
         }
 
         function setData(key, value) {
-            if (CLOUD_KEYS.has(key)) {
-                cloudCache[key] = value;
-                sbClient
-                    .from("portal_data")
-                    .upsert(
-                        { key, payload: value, updated_at: new Date().toISOString() },
-                        { onConflict: "key" }
-                    )
-                    .then(({ error }) => {
-                        if (error) console.warn("Supabase save error:", error.message);
-                    });
-            }
-
+            cloudCache[key] = value;
             try {
                 localStorage.setItem(key, JSON.stringify(value));
-            } catch (e) {
-                console.warn("Storage warning:", e);
+            } catch (err) {
+                console.warn("Local storage save warning:", err);
+            }
+            syncKeyToCloud(key, value);
+        }
+
+        async function syncKeyToCloud(key, value) {
+            if (!supabaseClient) return;
+            try {
+                await supabaseClient
+                    .from("portal_data")
+                    .upsert({ key, payload: value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+            } catch (err) {
+                console.warn("Supabase sync skipped/failed:", err);
             }
         }
 
-        function applySavedTheme() {
-            const dark = Boolean(getData(KEYS.DARK_MODE, false));
-            document.body.classList.toggle("dark-mode", dark);
-            const btn = document.getElementById("themeToggleBtn");
-            if (btn) btn.textContent = dark ? "Light" : "Dark";
-        }
-
-        function toggleDarkMode() {
-            const next = !document.body.classList.contains("dark-mode");
-            setData(KEYS.DARK_MODE, next);
-            applySavedTheme();
-        }
-
-        function renderAvatarContent(el, user) {
-            if (!el || !user) return;
-            if (user.photoDataUrl) {
-                el.innerHTML = `<img src="${user.photoDataUrl}" alt="${user.fullName}">`;
-            } else {
-                el.textContent = user.avatar || "🧑🏾‍🎓";
+        async function loadCloudCache() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from("portal_data")
+                    .select("key, payload");
+                if (error || !Array.isArray(data)) return;
+                data.forEach(row => {
+                    if (row && row.key) {
+                        cloudCache[row.key] = row.payload;
+                        try {
+                            localStorage.setItem(row.key, JSON.stringify(row.payload));
+                        } catch {}
+                    }
+                });
+            } catch (err) {
+                console.warn("Cloud load warning:", err);
             }
         }
 
-        let pendingSchoolPhoto = null;
-        let pendingPrincipalPhoto = null;
+        async function loadCloudCacheWithTimeout(ms = 2500) {
+            await Promise.race([
+                loadCloudCache(),
+                new Promise(resolve => setTimeout(resolve, ms))
+            ]);
+        }
+
+        function isCurrentUserAdmin() {
+            if (!currentUser || !currentUser.username) return false;
+            return ADMIN_USERNAMES.includes(currentUser.username.trim().toLowerCase());
+        }
+
+        function applyAdminClass() {
+            document.body.classList.toggle("is-admin", isCurrentUserAdmin());
+        }
 
         function seedDefaultsIfEmpty() {
             if (!getData(KEYS.SCHOOL_INFO, null)) {
-    setData(KEYS.SCHOOL_INFO, {
-        name: "Juilliard Academy",
-        motto: "Excellence, Creativity & Discipline",
-        location: "Main Academic Campus",
-        principal: "Dr. A. B. Adeyemi",
-        about: "Juilliard Academy empowers students through strong academics, character formation, clubs, and sports.",
-        schoolPhotoUrl: "",
-        principalPhotoUrl: ""
-    });
-}
+                setData(KEYS.SCHOOL_INFO, {
+                    name: "Juilliard Academy",
+                    motto: "Excellence, Creativity & Discipline",
+                    location: "Main Academic Campus",
+                    principal: "Dr. A. B. Adeyemi",
+                    about: "Juilliard Academy empowers students through strong academics, character formation, clubs, and sports.",
+                    schoolPhotoUrl: "",
+                    principalPhotoUrl: ""
+                });
+            }
             if (!getData(KEYS.SPOTLIGHTS, null)) {
-    setData(KEYS.SPOTLIGHTS, {
-        sotw: { name: "Zainab Balogun (SS1)", reason: "Consistent punctuality and leadership in science practicals." },
-        president: { name: "Chinedu Okafor (SS3)", reason: "Leading student council initiatives and peer mentorship." },
-        vp: { name: "Amina Yusuf (SS2)", reason: "Coordinating inter-club activities and student welfare." },
-        innovative: { name: "Kai Nkem (SS1)", reason: "Designed and launched the Juilliard Academy digital student portal." },
-        kom: { name: "Tunde Bakare (SS2)", reason: "Top score in the weekly Mathematics & Algebra challenge." },
-        qom: { name: "Chisom Nwosu (SS1)", reason: "Highest accuracy in Further Mathematics & Geometry problem sets." }
-    });
-}
+                setData(KEYS.SPOTLIGHTS, {
+                    sotw: { name: "Zainab Balogun (SS1)", reason: "Consistent punctuality and leadership in science practicals." },
+                    president: { name: "Chinedu Okafor (SS3)", reason: "Leading student council initiatives and peer mentorship." },
+                    vp: { name: "Amina Yusuf (SS2)", reason: "Coordinating inter-club activities and student welfare." },
+                    innovative: { name: "Kai Nkem (SS1)", reason: "Designed and launched the Juilliard Academy digital student portal." },
+                    kom: { name: "Tunde Bakare (SS2)", reason: "Top score in the weekly Mathematics & Algebra challenge." },
+                    qom: { name: "Chisom Nwosu (SS1)", reason: "Highest accuracy in Further Mathematics & Geometry problem sets." }
+                });
+            }
             if (!getData(KEYS.CLASS_NEWS, null)) {
                 setData(KEYS.CLASS_NEWS, [
                     { id: 1, classLevel: "SS1", title: "Lab Coat Reminder", body: "Bring lab coats for Thursday's science practical.", author: "Class Rep", date: "Today" }
                 ]);
             }
-            if (!getData(KEYS.TESTS, null)) {
-                setData(KEYS.TESTS, [
-                    { id: 1, subject: "Mathematics", classLevel: "SS1", date: "2026-11-24", topics: "Quadratic Equations & Indices" }
+            if (!getData(KEYS.REMINDERS, null)) {
+                setData(KEYS.REMINDERS, [
+                    { id: 1, classLevel: "SS1", text: "Revise quadratic equations & indices", dueDate: "2026-11-26" }
                 ]);
             }
-            if (!getData(KEYS.MATCHES, null)) {
-                setData(KEYS.MATCHES, [
-                    { id: 1, teams: "Red House vs White House", sport: "Football", date: "2026-11-20" }
-                ]);
-            }
-            if (!getData(KEYS.ESSAYS, null)) {
-                setData(KEYS.ESSAYS, [
-                    {
-                        id: 1,
-                        title: "Why Discipline Shapes Future Leaders",
-                        author: "Amaka Eze (SS1)",
-                        body: "Daily habits of integrity and focus build lasting leadership both in class and beyond.",
-                        date: "Nov 2026"
-                    }
-                ]);
-            }
-            if (!getData(KEYS.REVIEWS, null)) {
-                setData(KEYS.REVIEWS, [
-                    { id: 1, rating: 5, highlight: "Clubs & Sports", comment: "Great balance between academics, Thursday clubs, and Friday sports.", author: "David O. (SS1)" }
-                ]);
+        }
+
+        function renderAvatarInto(el, user) {
+            if (!el) return;
+            if (user && user.photoUrl) {
+                el.innerHTML = `<img src="${user.photoUrl}" alt="${user.fullName || "User"}">`;
+            } else {
+                el.textContent = (user && user.avatar) || "🧑🏾‍🎓";
             }
         }
 
         function switchAuthMode(mode) {
-            document.getElementById("authError").style.display = "none";
             const isLogin = mode === "login";
-            document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
-            document.getElementById("registerForm").style.display = isLogin ? "none" : "block";
             document.getElementById("tabLoginBtn").classList.toggle("active", isLogin);
             document.getElementById("tabRegisterBtn").classList.toggle("active", !isLogin);
+            document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
+            document.getElementById("registerForm").style.display = isLogin ? "none" : "block";
+            showAuthError("");
         }
 
         function showAuthError(msg) {
-            const el = document.getElementById("authError");
-            el.textContent = msg;
-            el.style.display = "block";
+            const box = document.getElementById("authError");
+            if (!msg) {
+                box.style.display = "none";
+                box.textContent = "";
+                return;
+            }
+            box.textContent = msg;
+            box.style.display = "block";
         }
 
         function handleRegister(e) {
@@ -1517,18 +1312,24 @@
             const avatar = document.getElementById("regAvatar").value;
             const password = document.getElementById("regPassword").value;
 
+            if (!fullName || !username || !password) return;
             const users = getData(KEYS.USERS, []);
-            if (users.some(u => u.username === username)) {
+            if (users.some(u => u.username.toLowerCase() === username)) {
                 showAuthError("That username is already taken.");
                 return;
             }
 
-            const newUser = { fullName, username, classLevel, avatar, photoDataUrl: "", bio: "", password };
+            const newUser = {
+                fullName,
+                username,
+                classLevel,
+                avatar,
+                photoUrl: "",
+                password
+            };
             users.push(newUser);
             setData(KEYS.USERS, users);
-            setData(KEYS.CURRENT_USER, newUser);
-            playLoginChime();
-            launchBadgeAndPortal(newUser);
+            enterPortalWithUser(newUser, true);
         }
 
         function handleLogin(e) {
@@ -1536,30 +1337,34 @@
             const username = document.getElementById("loginUsername").value.trim().toLowerCase();
             const password = document.getElementById("loginPassword").value;
             const users = getData(KEYS.USERS, []);
-            const found = users.find(u => u.username === username && u.password === password);
+            const found = users.find(u => u.username.toLowerCase() === username && u.password === password);
 
             if (!found) {
                 showAuthError("Invalid username or password.");
                 return;
             }
-
-            setData(KEYS.CURRENT_USER, found);
-            playLoginChime();
-            launchBadgeAndPortal(found);
+            showAuthError("");
+            enterPortalWithUser(found, true);
         }
 
-        function launchBadgeAndPortal(user) {
-            if (!user) return;
-            document.getElementById("authSection").style.display = "none";
-            document.getElementById("appWrapper").style.display = "none";
+        function enterPortalWithUser(user, showSplash) {
+            currentUser = user;
+            localStorage.setItem(KEYS.SESSION, user.username);
+            applyAdminClass();
+            renderAll();
+
+            if (!showSplash) {
+                document.getElementById("authSection").style.display = "none";
+                document.getElementById("appWrapper").style.display = "block";
+                return;
+            }
 
             const splash = document.getElementById("loginBadgeScreen");
             const bar = document.getElementById("splashProgressBar");
-            renderAvatarContent(document.getElementById("splashAvatarBox"), user);
+            const roleLabel = isCurrentUserAdmin() ? "Admin" : "Student";
+            renderAvatarInto(document.getElementById("splashAvatarBox"), user);
             document.getElementById("splashName").textContent = `Welcome, ${user.fullName}!`;
-            document.getElementById("splashBadge").textContent = isCurrentUserAdmin()
-                ? `Admin • @${user.username}`
-                : `${user.classLevel} Student • @${user.username}`;
+            document.getElementById("splashBadge").textContent = `${roleLabel} • ${user.classLevel || "SS1"}`;
 
             bar.style.transition = "none";
             bar.style.width = "0%";
@@ -1572,393 +1377,334 @@
                 });
             });
 
-            if (badgeTimer) clearTimeout(badgeTimer);
-            badgeTimer = setTimeout(() => {
+            setTimeout(() => {
                 splash.style.display = "none";
+                document.getElementById("authSection").style.display = "none";
                 document.getElementById("appWrapper").style.display = "block";
-                renderAllAppData();
             }, 4000);
         }
 
         function handleLogout() {
-            playLogoutTone();
-            localStorage.removeItem(KEYS.CURRENT_USER);
+            currentUser = null;
+            localStorage.removeItem(KEYS.SESSION);
+            document.body.classList.remove("is-admin");
             document.getElementById("appWrapper").style.display = "none";
-            document.getElementById("loginBadgeScreen").style.display = "none";
             document.getElementById("authSection").style.display = "flex";
-            document.getElementById("loginForm").reset();
+            switchAuthMode("login");
         }
 
-        function showSection(sectionId, btnEl) {
+        function showSection(sectionId) {
             document.querySelectorAll(".page-section").forEach(sec => sec.classList.remove("active"));
-            const sec = document.getElementById(sectionId);
-            if (sec) sec.classList.add("active");
+            const target = document.getElementById(sectionId);
+            if (target) target.classList.add("active");
 
             document.querySelectorAll(".dock-btn").forEach(btn => {
-                btn.classList.toggle("active", btn === btnEl || btn.dataset.target === sectionId);
+                btn.classList.toggle("active", btn.dataset.target === sectionId);
             });
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        function renderDailyQuote() {
-            document.getElementById("dailyQuoteText").textContent = DAILY_QUOTES[quoteIndex];
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle("dark-mode");
+            localStorage.setItem(KEYS.DARK_MODE, isDark ? "1" : "0");
+            document.getElementById("themeToggleBtn").textContent = isDark ? "Light" : "Dark";
         }
 
         function nextDailyQuote() {
-            quoteIndex = (quoteIndex + 1) % DAILY_QUOTES.length;
-            renderDailyQuote();
+            quoteIndex = (quoteIndex + 1) % QUOTES.length;
+            document.getElementById("dailyQuoteText").textContent = QUOTES[quoteIndex];
         }
 
         function renderFixtures() {
             const now = new Date();
-            document.getElementById("todayDateBadge").textContent = now.toLocaleDateString("en-US", {
-                weekday: "long", month: "short", day: "numeric", year: "numeric"
+            const tomorrowIdx = (now.getDay() + 1) % 7;
+            const tomorrow = WEEKLY_FIXTURES[tomorrowIdx];
+
+            document.getElementById("todayDateBadge").textContent = now.toLocaleDateString(undefined, {
+                weekday: "short",
+                month: "short",
+                day: "numeric"
             });
+            document.getElementById("tomorrowDayLabel").textContent = tomorrow.day;
+            document.getElementById("tomorrowFixtureTitle").textContent = tomorrow.title;
+            document.getElementById("tomorrowFixtureDesc").textContent = tomorrow.desc;
 
-            const tomorrow = new Date(now);
-            tomorrow.setDate(now.getDate() + 1);
-            const tDay = tomorrow.getDay();
-
-            if (WEEKLY_FIXTURES[tDay]) {
-                const fix = WEEKLY_FIXTURES[tDay];
-                document.getElementById("tomorrowDayLabel").textContent = `Tomorrow (${fix.day})`;
-                document.getElementById("tomorrowFixtureTitle").textContent = fix.title;
-                document.getElementById("tomorrowFixtureDesc").textContent = fix.desc;
-            } else {
-                const label = tDay === 6 ? "Saturday" : "Sunday";
-                document.getElementById("tomorrowDayLabel").textContent = `Tomorrow (${label})`;
-                document.getElementById("tomorrowFixtureTitle").textContent = "Weekend Study & Rest";
-                document.getElementById("tomorrowFixtureDesc").textContent = "No regular weekday fixture tomorrow. Get set for Monday Assembly.";
-            }
-
-            document.getElementById("weeklyFixturesList").innerHTML = Object.entries(WEEKLY_FIXTURES).map(([num, item]) => {
-                const next = Number(num) === tDay;
-                return `<li class="${next ? "is-tomorrow" : ""}"><span><strong>${item.day}:</strong> ${item.title}</span><span>${next ? "NEXT" : ""}</span></li>`;
+            const listEl = document.getElementById("weeklyFixturesList");
+            listEl.innerHTML = Object.keys(WEEKLY_FIXTURES).map(idxStr => {
+                const idx = Number(idxStr);
+                const item = WEEKLY_FIXTURES[idx];
+                const isTom = idx === tomorrowIdx;
+                return `
+                    <li class="${isTom ? "is-tomorrow" : ""}">
+                        <span>${item.day} — ${item.title}</span>
+                        <span>${isTom ? "Next Up" : ""}</span>
+                    </li>
+                `;
             }).join("");
         }
 
-        function applyAdminPermissions() {
-            const admin = isCurrentUserAdmin();
-            document.querySelectorAll(".admin-only-form, .admin-only-card").forEach(el => {
-                el.style.display = admin ? "block" : "none";
+        function handleSchoolAssetUpload(e, target) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const maxW = target === "school" ? 640 : 280;
+                    const scale = Math.min(1, maxW / img.width);
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+                    if (target === "school") {
+                        pendingSchoolPhoto = dataUrl;
+                    } else {
+                        pendingPrincipalPhoto = dataUrl;
+                    }
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearSchoolPhoto(target) {
+            if (!isCurrentUserAdmin()) return;
+            const info = getData(KEYS.SCHOOL_INFO, {});
+            if (target === "school") {
+                info.schoolPhotoUrl = "";
+                pendingSchoolPhoto = null;
+            } else {
+                info.principalPhotoUrl = "";
+                pendingPrincipalPhoto = null;
+            }
+            setData(KEYS.SCHOOL_INFO, info);
+            renderSchoolInfo();
+        }
+
+        function renderSchoolInfo() {
+            const info = getData(KEYS.SCHOOL_INFO, {});
+            const name = info.name || "Juilliard Academy";
+            document.getElementById("headerSchoolName").textContent = name;
+            document.getElementById("aboutSchoolHeading").textContent = name;
+            document.getElementById("aboutMottoBadge").textContent = info.motto || "Excellence";
+            document.getElementById("homeSchoolDescription").textContent = info.about || "";
+
+            const hasSchoolPhoto = Boolean(info.schoolPhotoUrl);
+            const hasPrincipalPhoto = Boolean(info.principalPhotoUrl);
+            const visualsWrap = document.getElementById("aboutSchoolVisuals");
+            const schoolCard = document.getElementById("aboutSchoolPhotoCard");
+            const principalCard = document.getElementById("aboutPrincipalPhotoCard");
+
+            visualsWrap.style.display = (hasSchoolPhoto || hasPrincipalPhoto) ? "grid" : "none";
+            schoolCard.style.display = hasSchoolPhoto ? "block" : "none";
+            principalCard.style.display = hasPrincipalPhoto ? "block" : "none";
+
+            if (hasSchoolPhoto) {
+                document.getElementById("aboutSchoolPhotoImg").src = info.schoolPhotoUrl;
+            }
+            if (hasPrincipalPhoto) {
+                document.getElementById("aboutPrincipalPhotoImg").src = info.principalPhotoUrl;
+                document.getElementById("aboutPrincipalPhotoCaption").textContent = info.principal || "";
+            }
+
+            document.getElementById("homeSchoolMeta").innerHTML = `
+                <div class="info-tile"><small>Motto</small><strong>${info.motto || ""}</strong></div>
+                <div class="info-tile"><small>Location</small><strong>${info.location || ""}</strong></div>
+                <div class="info-tile"><small>Principal</small><strong>${info.principal || ""}</strong></div>
+            `;
+            document.getElementById("schoolNameInput").value = name;
+            document.getElementById("schoolMottoInput").value = info.motto || "";
+            document.getElementById("schoolLocationInput").value = info.location || "";
+            document.getElementById("schoolPrincipalInput").value = info.principal || "";
+            document.getElementById("schoolAboutInput").value = info.about || "";
+        }
+
+        function saveSchoolInfo(e) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            const prev = getData(KEYS.SCHOOL_INFO, {});
+            setData(KEYS.SCHOOL_INFO, {
+                name: document.getElementById("schoolNameInput").value.trim(),
+                motto: document.getElementById("schoolMottoInput").value.trim(),
+                location: document.getElementById("schoolLocationInput").value.trim(),
+                principal: document.getElementById("schoolPrincipalInput").value.trim(),
+                about: document.getElementById("schoolAboutInput").value.trim(),
+                schoolPhotoUrl: pendingSchoolPhoto !== null ? pendingSchoolPhoto : (prev.schoolPhotoUrl || ""),
+                principalPhotoUrl: pendingPrincipalPhoto !== null ? pendingPrincipalPhoto : (prev.principalPhotoUrl || "")
+            });
+            pendingSchoolPhoto = null;
+            pendingPrincipalPhoto = null;
+            renderSchoolInfo();
+            alert("School info and photos updated.");
+        }
+
+        function renderSpotlights() {
+            const spot = getData(KEYS.SPOTLIGHTS, {});
+            const roles = [
+                { key: "sotw", id: "sotwDisplay", label: "Student of the Week" },
+                { key: "president", id: "presidentDisplay", label: "School President" },
+                { key: "vp", id: "vpDisplay", label: "Vice President" },
+                { key: "innovative", id: "innovativeDisplay", label: "Most Innovative Student" },
+                { key: "kom", id: "komDisplay", label: "King of Math" },
+                { key: "qom", id: "qomDisplay", label: "Queen of Math" }
+            ];
+
+            roles.forEach(role => {
+                const entry = spot[role.key] || { name: "Not assigned yet", reason: "" };
+                const el = document.getElementById(role.id);
+                if (el) {
+                    el.innerHTML = `
+                        <div class="spotlight-label">${role.label}</div>
+                        <h4>${entry.name || "Not assigned yet"}</h4>
+                        <p>${entry.reason || ""}</p>
+                    `;
+                }
             });
         }
 
-        function renderAllAppData() {
-            const user = getData(KEYS.CURRENT_USER, null);
-            if (!user) return;
+        function updateSpotlight(e, type) {
+            e.preventDefault();
+            if (!isCurrentUserAdmin()) return;
+            const spot = getData(KEYS.SPOTLIGHTS, {});
+            const inputMap = {
+                sotw: ["sotwNameInput", "sotwReasonInput"],
+                president: ["presidentNameInput", "presidentReasonInput"],
+                vp: ["vpNameInput", "vpReasonInput"],
+                innovative: ["innovativeNameInput", "innovativeReasonInput"],
+                kom: ["komNameInput", "komReasonInput"],
+                qom: ["qomNameInput", "qomReasonInput"]
+            };
+            const ids = inputMap[type];
+            if (!ids) return;
 
-            renderAvatarContent(document.getElementById("headerAvatarBox"), user);
-            document.getElementById("headerUserName").textContent = `${user.fullName} (${user.classLevel})`;
-            document.getElementById("welcomeBannerTitle").textContent = `Welcome back, ${user.fullName}`;
-            document.getElementById("dashClassLabel").textContent = user.classLevel;
-            document.getElementById("classPageTitle").textContent = user.classLevel;
-
-            applyAdminPermissions();
-            renderDailyQuote();
-            renderFixtures();
-            renderSchoolInfo();
-            renderClassNewsAndReminders(user);
+            spot[type] = {
+                name: document.getElementById(ids[0]).value.trim(),
+                reason: document.getElementById(ids[1]).value.trim()
+            };
+            setData(KEYS.SPOTLIGHTS, spot);
+            e.target.reset();
             renderSpotlights();
-            renderTestsAndMatches();
-            renderEssays();
-            renderReviews();
-            renderProfileSection(user);
-        }
-
-let pendingSchoolPhoto = null;
-let pendingPrincipalPhoto = null;
-
-function handleSchoolAssetUpload(e, target) {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const maxW = target === "school" ? 640 : 280;
-            const scale = Math.min(1, maxW / img.width);
-            canvas.width = Math.round(img.width * scale);
-            canvas.height = Math.round(img.height * scale);
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-            if (target === "school") {
-                pendingSchoolPhoto = dataUrl;
-            } else {
-                pendingPrincipalPhoto = dataUrl;
-            }
-        };
-        img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
-function clearSchoolPhoto(target) {
-    if (!isCurrentUserAdmin()) return;
-    const info = getData(KEYS.SCHOOL_INFO, {});
-    if (target === "school") {
-        info.schoolPhotoUrl = "";
-        pendingSchoolPhoto = null;
-    } else {
-        info.principalPhotoUrl = "";
-        pendingPrincipalPhoto = null;
-    }
-    setData(KEYS.SCHOOL_INFO, info);
-    renderSchoolInfo();
-}
-        
-       function renderSchoolInfo() {
-    const info = getData(KEYS.SCHOOL_INFO, {});
-    const name = info.name || "Juilliard Academy";
-    document.getElementById("headerSchoolName").textContent = name;
-    document.getElementById("aboutSchoolHeading").textContent = name;
-    document.getElementById("aboutMottoBadge").textContent = info.motto || "Excellence";
-    document.getElementById("homeSchoolDescription").textContent = info.about || "";
-
-    const hasSchoolPhoto = Boolean(info.schoolPhotoUrl);
-    const hasPrincipalPhoto = Boolean(info.principalPhotoUrl);
-    const visualsWrap = document.getElementById("aboutSchoolVisuals");
-    const schoolCard = document.getElementById("aboutSchoolPhotoCard");
-    const principalCard = document.getElementById("aboutPrincipalPhotoCard");
-
-    if (visualsWrap) visualsWrap.style.display = (hasSchoolPhoto || hasPrincipalPhoto) ? "grid" : "none";
-    if (schoolCard) schoolCard.style.display = hasSchoolPhoto ? "block" : "none";
-    if (principalCard) principalCard.style.display = hasPrincipalPhoto ? "block" : "none";
-
-    if (hasSchoolPhoto && document.getElementById("aboutSchoolPhotoImg")) {
-        document.getElementById("aboutSchoolPhotoImg").src = info.schoolPhotoUrl;
-    }
-    if (hasPrincipalPhoto && document.getElementById("aboutPrincipalPhotoImg")) {
-        document.getElementById("aboutPrincipalPhotoImg").src = info.principalPhotoUrl;
-        if (document.getElementById("aboutPrincipalPhotoCaption")) {
-            document.getElementById("aboutPrincipalPhotoCaption").textContent = info.principal || "";
-        }
-    }
-
-    document.getElementById("homeSchoolMeta").innerHTML = `
-        <div class="info-tile"><small>Motto</small><strong>${info.motto || ""}</strong></div>
-        <div class="info-tile"><small>Location</small><strong>${info.location || ""}</strong></div>
-        <div class="info-tile"><small>Principal</small><strong>${info.principal || ""}</strong></div>
-    `;
-    document.getElementById("schoolNameInput").value = name;
-    document.getElementById("schoolMottoInput").value = info.motto || "";
-    document.getElementById("schoolLocationInput").value = info.location || "";
-    document.getElementById("schoolPrincipalInput").value = info.principal || "";
-    document.getElementById("schoolAboutInput").value = info.about || "";
-}
-
-        function saveSchoolInfo(e) {
-    e.preventDefault();
-    if (!isCurrentUserAdmin()) return;
-    const prev = getData(KEYS.SCHOOL_INFO, {});
-    setData(KEYS.SCHOOL_INFO, {
-        name: document.getElementById("schoolNameInput").value.trim(),
-        motto: document.getElementById("schoolMottoInput").value.trim(),
-        location: document.getElementById("schoolLocationInput").value.trim(),
-        principal: document.getElementById("schoolPrincipalInput").value.trim(),
-        about: document.getElementById("schoolAboutInput").value.trim(),
-        schoolPhotoUrl: pendingSchoolPhoto !== null ? pendingSchoolPhoto : (prev.schoolPhotoUrl || ""),
-        principalPhotoUrl: pendingPrincipalPhoto !== null ? pendingPrincipalPhoto : (prev.principalPhotoUrl || "")
-    });
-    pendingSchoolPhoto = null;
-    pendingPrincipalPhoto = null;
-    renderSchoolInfo();
-    alert("School info and photos updated.");
-}
-
-        function renderClassNewsAndReminders(user) {
-            const news = getData(KEYS.CLASS_NEWS, []).filter(n => n.classLevel === user.classLevel);
-            document.getElementById("classNewsList").innerHTML = news.length
-                ? news.map(n => `<div class="entry-box"><div class="entry-top"><strong>${n.title}</strong><span class="tag-red">${n.date} • ${n.author}</span></div><p>${n.body}</p></div>`).join("")
-                : `<p style="color: var(--muted); font-size: 0.9rem;">No news for ${user.classLevel} yet.</p>`;
-
-            document.getElementById("dashClassNewsPreview").innerHTML = news.slice(0, 2).map(n =>
-                `<div class="entry-box"><div class="entry-top"><strong>${n.title}</strong></div><p>${n.body}</p></div>`
-            ).join("") || `<p style="color: var(--muted); font-size: 0.88rem;">No class news yet.</p>`;
-
-            const reminders = getData(KEYS.REMINDERS, []).filter(r => r.username === user.username);
-            document.getElementById("userRemindersList").innerHTML = reminders.length
-                ? reminders.map(r => `<div class="entry-box"><div class="entry-top"><strong>${r.text}</strong><div><span class="tag-red">${r.date}</span> <button type="button" class="btn-ghost" style="padding: 0.15rem 0.5rem;" onclick="deleteReminder(${r.id})">Done</button></div></div></div>`).join("")
-                : `<p style="color: var(--muted); font-size: 0.9rem;">No reminders yet.</p>`;
-
-            document.getElementById("dashRemindersPreview").innerHTML = reminders.slice(0, 2).map(r =>
-                `<div class="entry-box"><div class="entry-top"><strong>${r.text}</strong><span class="tag-red">${r.date}</span></div></div>`
-            ).join("") || `<p style="color: var(--muted); font-size: 0.88rem;">No reminders yet.</p>`;
         }
 
         function addClassNews(e) {
             e.preventDefault();
             if (!isCurrentUserAdmin()) return;
-            const user = getData(KEYS.CURRENT_USER, null);
-            const all = getData(KEYS.CLASS_NEWS, []);
-            all.unshift({
+            const title = document.getElementById("newsTitleInput").value.trim();
+            const body = document.getElementById("newsBodyInput").value.trim();
+            if (!title || !body) return;
+
+            const classLevel = (currentUser && currentUser.classLevel) || "SS1";
+            const items = getData(KEYS.CLASS_NEWS, []);
+            items.unshift({
                 id: Date.now(),
-                classLevel: user.classLevel,
-                title: document.getElementById("classNewsTitle").value.trim(),
-                body: document.getElementById("classNewsBody").value.trim(),
-                author: user.fullName,
-                date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                classLevel,
+                title,
+                body,
+                author: (currentUser && currentUser.fullName) || "Admin",
+                date: new Date().toLocaleDateString()
             });
-            setData(KEYS.CLASS_NEWS, all);
+            setData(KEYS.CLASS_NEWS, items);
             e.target.reset();
-            renderClassNewsAndReminders(user);
+            renderClassHub();
         }
 
-        function addUserReminder(e) {
+        function addReminder(e) {
             e.preventDefault();
-            const user = getData(KEYS.CURRENT_USER, null);
-            if (!user) return;
-            const all = getData(KEYS.REMINDERS, []);
-            all.unshift({
+            const text = document.getElementById("reminderTextInput").value.trim();
+            const dueDate = document.getElementById("reminderDateInput").value;
+            if (!text || !dueDate) return;
+
+            const classLevel = (currentUser && currentUser.classLevel) || "SS1";
+            const list = getData(KEYS.REMINDERS, []);
+            list.unshift({
                 id: Date.now(),
-                username: user.username,
-                text: document.getElementById("reminderText").value.trim(),
-                date: document.getElementById("reminderDate").value
+                classLevel,
+                text,
+                dueDate
             });
-            setData(KEYS.REMINDERS, all);
+            setData(KEYS.REMINDERS, list);
             e.target.reset();
-            renderClassNewsAndReminders(user);
+            renderClassHub();
+        }
+
+        function editReminder(id) {
+            const list = getData(KEYS.REMINDERS, []);
+            const target = list.find(r => r.id === id);
+            if (!target) return;
+
+            const updatedText = prompt("Edit reminder:", target.text);
+            if (updatedText === null) return;
+            const trimmed = updatedText.trim();
+            if (!trimmed) return;
+
+            const updatedDate = prompt("Edit due date (YYYY-MM-DD):", target.dueDate || "");
+            target.text = trimmed;
+            if (updatedDate && updatedDate.trim()) {
+                target.dueDate = updatedDate.trim();
+            }
+            setData(KEYS.REMINDERS, list);
+            renderClassHub();
         }
 
         function deleteReminder(id) {
-            const user = getData(KEYS.CURRENT_USER, null);
-            setData(KEYS.REMINDERS, getData(KEYS.REMINDERS, []).filter(r => r.id !== id));
-            renderClassNewsAndReminders(user);
+            const list = getData(KEYS.REMINDERS, []).filter(r => r.id !== id);
+            setData(KEYS.REMINDERS, list);
+            renderClassHub();
         }
 
-     function renderSpotlights() {
-    const spot = getData(KEYS.SPOTLIGHTS, {});
-    const roles = [
-        { key: "sotw", id: "sotwDisplay", label: "Student of the Week" },
-        { key: "president", id: "presidentDisplay", label: "School President" },
-        { key: "vp", id: "vpDisplay", label: "Vice President" },
-        { key: "innovative", id: "innovativeDisplay", label: "Most Innovative Student" },
-        { key: "kom", id: "komDisplay", label: "King of Math" },
-        { key: "qom", id: "qomDisplay", label: "Queen of Math" }
-    ];
+        function renderClassHub() {
+            const cls = (currentUser && currentUser.classLevel) || "SS1";
+            document.getElementById("dashClassLabel").textContent = cls;
+            document.getElementById("classPageTitle").textContent = cls;
 
-    roles.forEach(role => {
-        const entry = spot[role.key] || { name: "Not assigned yet", reason: "" };
-        const el = document.getElementById(role.id);
-        if (el) {
-            el.innerHTML = `
-                <div class="spotlight-label">${role.label}</div>
-                <h4>${entry.name || "Not assigned yet"}</h4>
-                <p>${entry.reason || ""}</p>
-            `;
-        }
-    });
-}
+            const news = getData(KEYS.CLASS_NEWS, []).filter(n => !n.classLevel || n.classLevel === cls);
+            const reminders = getData(KEYS.REMINDERS, []).filter(r => !r.classLevel || r.classLevel === cls);
 
-      function updateSpotlight(e, type) {
-    e.preventDefault();
-    if (!isCurrentUserAdmin()) return;
-    const spot = getData(KEYS.SPOTLIGHTS, {});
-    const inputMap = {
-        sotw: ["sotwNameInput", "sotwReasonInput"],
-        president: ["presidentNameInput", "presidentReasonInput"],
-        vp: ["vpNameInput", "vpReasonInput"],
-        innovative: ["innovativeNameInput", "innovativeReasonInput"],
-        kom: ["komNameInput", "komReasonInput"],
-        qom: ["qomNameInput", "qomReasonInput"]
-    };
-    const ids = inputMap[type];
-    if (!ids) return;
+            document.getElementById("classNewsList").innerHTML = news.length
+                ? news.map(n => `
+                    <div class="entry-box">
+                        <div class="entry-top">
+                            <strong>${n.title}</strong>
+                            <span class="tag-red">${n.date || "Recent"}</span>
+                        </div>
+                        <p>${n.body}</p>
+                    </div>
+                `).join("")
+                : `<p style="color: var(--muted); font-size: 0.9rem;">No class announcements yet.</p>`;
 
-    spot[type] = {
-        name: document.getElementById(ids[0]).value.trim(),
-        reason: document.getElementById(ids[1]).value.trim()
-    };
-    setData(KEYS.SPOTLIGHTS, spot);
-    e.target.reset();
-    renderSpotlights();
-}
-        function renderTestsAndMatches() {
-            document.getElementById("upcomingTestsList").innerHTML = getData(KEYS.TESTS, []).map(t =>
-                `<div class="entry-box"><div class="entry-top"><strong>${t.subject} (${t.classLevel})</strong><span class="tag-red">${t.date}</span></div><p>Topics: ${t.topics}</p></div>`
-            ).join("");
+            document.getElementById("dashClassNewsPreview").innerHTML = news.length
+                ? news.slice(0, 2).map(n => `
+                    <div class="entry-box">
+                        <div class="entry-top"><strong>${n.title}</strong><span class="tag-red">${n.date || ""}</span></div>
+                        <p>${n.body}</p>
+                    </div>
+                `).join("")
+                : `<p style="color: var(--muted); font-size: 0.88rem;">No class news yet.</p>`;
 
-            document.getElementById("sportsMatchesList").innerHTML = getData(KEYS.MATCHES, []).map(m =>
-                `<div class="entry-box"><div class="entry-top"><strong>${m.teams}</strong><span class="tag-solid">${m.sport} • ${m.date}</span></div></div>`
-            ).join("");
-        }
+            document.getElementById("remindersList").innerHTML = reminders.length
+                ? reminders.map(r => `
+                    <div class="entry-box">
+                        <div class="entry-top">
+                            <strong>${r.text}</strong>
+                            <span class="tag-red">${r.dueDate || ""}</span>
+                        </div>
+                        <div class="entry-actions">
+                            <button type="button" class="btn-ghost" onclick="editReminder(${r.id})">Edit</button>
+                            <button type="button" class="btn-ghost" onclick="deleteReminder(${r.id})">Delete</button>
+                        </div>
+                    </div>
+                `).join("")
+                : `<p style="color: var(--muted); font-size: 0.9rem;">No reminders yet.</p>`;
 
-        function addUpcomingTest(e) {
-            e.preventDefault();
-            if (!isCurrentUserAdmin()) return;
-            const tests = getData(KEYS.TESTS, []);
-            tests.unshift({
-                id: Date.now(),
-                subject: document.getElementById("testSubject").value.trim(),
-                classLevel: document.getElementById("testClass").value.trim().toUpperCase(),
-                date: document.getElementById("testDate").value,
-                topics: document.getElementById("testTopics").value.trim()
-            });
-            setData(KEYS.TESTS, tests);
-            e.target.reset();
-            renderTestsAndMatches();
-        }
-
-        function addSportsMatch(e) {
-            e.preventDefault();
-            if (!isCurrentUserAdmin()) return;
-            const matches = getData(KEYS.MATCHES, []);
-            matches.unshift({
-                id: Date.now(),
-                teams: document.getElementById("matchTeams").value.trim(),
-                sport: document.getElementById("matchSport").value.trim(),
-                date: document.getElementById("matchDate").value
-            });
-            setData(KEYS.MATCHES, matches);
-            e.target.reset();
-            renderTestsAndMatches();
-        }
-
-        function renderEssays() {
-            document.getElementById("essaysList").innerHTML = getData(KEYS.ESSAYS, []).map(es =>
-                `<div class="card"><div class="entry-top"><h3 style="color: var(--red);">${es.title}</h3><span class="tag-red">By ${es.author} • ${es.date}</span></div><p style="color: var(--muted); white-space: pre-line; margin-top: 0.6rem;">${es.body}</p></div>`
-            ).join("");
-        }
-
-        function addStudentEssay(e) {
-            e.preventDefault();
-            if (!isCurrentUserAdmin()) return;
-            const essays = getData(KEYS.ESSAYS, []);
-            essays.unshift({
-                id: Date.now(),
-                title: document.getElementById("essayTitle").value.trim(),
-                author: document.getElementById("essayAuthor").value.trim(),
-                body: document.getElementById("essayBody").value.trim(),
-                date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-            });
-            setData(KEYS.ESSAYS, essays);
-            e.target.reset();
-            renderEssays();
-        }
-
-        function renderReviews() {
-            document.getElementById("reviewsList").innerHTML = getData(KEYS.REVIEWS, []).map(rv =>
-                `<div class="card"><div class="entry-top"><strong>${rv.rating}/5 — ${rv.highlight}</strong><span class="tag-red">${rv.author}</span></div><p style="color: var(--muted); margin-top: 0.45rem;">${rv.comment}</p></div>`
-            ).join("");
-        }
-
-        function addSchoolReview(e) {
-            e.preventDefault();
-            const user = getData(KEYS.CURRENT_USER, null);
-            if (!user) return;
-            const reviews = getData(KEYS.REVIEWS, []);
-            reviews.unshift({
-                id: Date.now(),
-                rating: Number(document.getElementById("reviewRating").value),
-                highlight: document.getElementById("reviewHighlight").value.trim(),
-                comment: document.getElementById("reviewComment").value.trim(),
-                author: `${user.fullName} (${user.classLevel})`
-            });
-            setData(KEYS.REVIEWS, reviews);
-            e.target.reset();
-            renderReviews();
+            document.getElementById("dashRemindersPreview").innerHTML = reminders.length
+                ? reminders.slice(0, 2).map(r => `
+                    <div class="entry-box">
+                        <div class="entry-top"><strong>${r.text}</strong><span class="tag-red">${r.dueDate || ""}</span></div>
+                    </div>
+                `).join("")
+                : `<p style="color: var(--muted); font-size: 0.88rem;">No reminders yet.</p>`;
         }
 
         function handleProfilePhotoUpload(e) {
@@ -1969,74 +1715,118 @@ function clearSchoolPhoto(target) {
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement("canvas");
-                    const size = 220;
-                    canvas.width = size;
-                    canvas.height = size;
+                    const maxSize = 180;
+                    const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
                     const ctx = canvas.getContext("2d");
-                    const side = Math.min(img.width, img.height);
-                    ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
-                    pendingPhotoDataUrl = canvas.toDataURL("image/jpeg", 0.82);
-                    document.getElementById("profilePreviewAvatar").innerHTML = `<img src="${pendingPhotoDataUrl}" alt="Preview">`;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    pendingProfilePhoto = canvas.toDataURL("image/jpeg", 0.75);
+                    renderAvatarInto(document.getElementById("profileAvatarPreview"), {
+                        ...currentUser,
+                        photoUrl: pendingProfilePhoto
+                    });
                 };
                 img.src = ev.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function removeProfilePhoto() {
-            pendingPhotoDataUrl = "";
-            const user = getData(KEYS.CURRENT_USER, null);
-            if (!user) return;
-            user.photoDataUrl = "";
-            persistUpdatedUser(user);
-            renderAllAppData();
+        function clearCustomPhoto() {
+            if (!currentUser) return;
+            pendingProfilePhoto = "";
+            currentUser.photoUrl = "";
+            const users = getData(KEYS.USERS, []).map(u =>
+                u.username === currentUser.username ? { ...u, photoUrl: "" } : u
+            );
+            setData(KEYS.USERS, users);
+            renderProfile();
         }
 
-        function persistUpdatedUser(updated) {
-            setData(KEYS.CURRENT_USER, updated);
-            const users = getData(KEYS.USERS, []);
-            const idx = users.findIndex(u => u.username === updated.username);
-            if (idx !== -1) {
-                users[idx] = updated;
-                setData(KEYS.USERS, users);
-            }
+        function renderProfile() {
+            if (!currentUser) return;
+            const roleLabel = isCurrentUserAdmin() ? "Admin" : "Student";
+            document.getElementById("headerUserName").textContent = currentUser.fullName;
+            document.getElementById("welcomeBannerTitle").textContent = `Welcome, ${currentUser.fullName}!`;
+            document.getElementById("profileDisplayName").textContent = currentUser.fullName;
+            document.getElementById("profileDisplayMeta").textContent = `@${currentUser.username} • ${roleLabel} • ${currentUser.classLevel || "SS1"}`;
+
+            renderAvatarInto(document.getElementById("headerAvatarBox"), currentUser);
+            renderAvatarInto(document.getElementById("profileAvatarPreview"), currentUser);
+
+            document.getElementById("profileFullNameInput").value = currentUser.fullName || "";
+            document.getElementById("profileClassInput").value = currentUser.classLevel || "SS1";
+            document.getElementById("profileIconSelect").value = currentUser.avatar || "🧑🏾‍🎓";
         }
 
-        function renderProfileSection(user) {
-            renderAvatarContent(document.getElementById("profilePreviewAvatar"), user);
-            document.getElementById("profilePreviewName").textContent = user.fullName;
-            document.getElementById("profilePreviewMeta").textContent = `@${user.username} • ${user.classLevel}`;
-            document.getElementById("profilePreviewBio").textContent = user.bio || "No bio yet.";
-            document.getElementById("profFullName").value = user.fullName || "";
-            document.getElementById("profClass").value = user.classLevel || "SS1";
-            document.getElementById("profFallbackEmoji").value = user.avatar || "🧑🏾‍🎓";
-            document.getElementById("profBio").value = user.bio || "";
-            pendingPhotoDataUrl = null;
-        }
-
-        function saveUserProfile(e) {
+        function saveProfile(e) {
             e.preventDefault();
-            const user = getData(KEYS.CURRENT_USER, null);
-            if (!user) return;
-            user.fullName = document.getElementById("profFullName").value.trim();
-            user.classLevel = document.getElementById("profClass").value;
-            user.avatar = document.getElementById("profFallbackEmoji").value;
-            user.bio = document.getElementById("profBio").value.trim();
-            if (pendingPhotoDataUrl !== null) user.photoDataUrl = pendingPhotoDataUrl;
-            persistUpdatedUser(user);
-            renderAllAppData();
+            if (!currentUser) return;
+            const fullName = document.getElementById("profileFullNameInput").value.trim();
+            const classLevel = document.getElementById("profileClassInput").value;
+            const avatar = document.getElementById("profileIconSelect").value;
+            const photoUrl = pendingProfilePhoto !== null ? pendingProfilePhoto : (currentUser.photoUrl || "");
+
+            currentUser = { ...currentUser, fullName, classLevel, avatar, photoUrl };
+            pendingProfilePhoto = null;
+
+            const users = getData(KEYS.USERS, []);
+            const idx = users.findIndex(u => u.username === currentUser.username);
+            if (idx >= 0) {
+                users[idx] = { ...users[idx], fullName, classLevel, avatar, photoUrl };
+            } else {
+                users.push(currentUser);
+            }
+            setData(KEYS.USERS, users);
+            renderProfile();
+            renderClassHub();
             alert("Profile saved.");
         }
 
+        function renderAll() {
+            applyAdminClass();
+            renderFixtures();
+            renderSchoolInfo();
+            renderSpotlights();
+            renderClassHub();
+            renderProfile();
+        }
+
         (async function initPortal() {
-            applySavedTheme();
-            await loadCloudCache();
+            if (localStorage.getItem(KEYS.DARK_MODE) === "1") {
+                document.body.classList.add("dark-mode");
+                document.getElementById("themeToggleBtn").textContent = "Light";
+            }
+
             seedDefaultsIfEmpty();
 
-            const existingSession = getData(KEYS.CURRENT_USER, null);
-            if (existingSession) {
-                launchBadgeAndPortal(existingSession);
+            const savedSession = localStorage.getItem(KEYS.SESSION);
+            const localUsers = getData(KEYS.USERS, []);
+            const localMatch = savedSession
+                ? localUsers.find(u => u.username.toLowerCase() === savedSession.toLowerCase())
+                : null;
+
+            if (localMatch) {
+                enterPortalWithUser(localMatch, false);
+            } else {
+                renderFixtures();
+                renderSchoolInfo();
+                renderSpotlights();
             }
+
+            await loadCloudCacheWithTimeout(2500);
+            seedDefaultsIfEmpty();
+
+            const updatedUsers = getData(KEYS.USERS, []);
+            if (savedSession) {
+                const cloudMatch = updatedUsers.find(u => u.username.toLowerCase() === savedSession.toLowerCase());
+                if (cloudMatch) {
+                    currentUser = cloudMatch;
+                    document.getElementById("authSection").style.display = "none";
+                    document.getElementById("appWrapper").style.display = "block";
+                }
+            }
+            renderAll();
         })();
     </script>
 </body>
